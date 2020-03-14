@@ -2,46 +2,26 @@
 #include <stdlib.h>
 #include <string.h>
 #include "vector.h"
+#include "set.h"
 #include <stdbool.h>
 #include "Q1.h"
 
-vector* read_file(char* filename) {
+void read_file(char* filename) {
 	FILE* f = fopen(filename, "r");
 	if (!f) exit(EXIT_FAILURE);
 
 	char buffer[1000]; buffer[0] = '\0';
 	char *toAdd = NULL;
-	vector* input = malloc(sizeof(vector));
-	vector_init(input);
+	simple_set* words = malloc(sizeof(simple_set));
+	set_init(words);
 
 	while (!feof (f)) {
 		buffer[0] = '\0';
 		fscanf (f, "%s", buffer);
-		toAdd = malloc(sizeof(char) * (strlen(buffer) + 1));
-		strcpy(toAdd, buffer);
-		vector_add(input, toAdd);
+		set_add(words, buffer);
 	}
 
-	char* temp = vector_get(input, 2045); // bad input
-	free(temp);
-	vector_delete(input, 2045);
-
-	printf("num_words: %d\n", input->total);
-	for (int i = 0; i < input->total; i++) {
-		// printf("%s\n", vector_get(input, i));
-	}
-
-	return input;
-}
-
-int* in_vector(vector* v, char* key) {
-	for (int i = 0; i < v->total; i++) {
-		if (strcmp(v->items[i], key)) {
-			return &i;
-		}
-	}
-
-	return NULL;
+	return words;
 }
 
 node* node_constructor(char* key, double probability) {
@@ -79,3 +59,9 @@ int main() {
 
 	return 1;
 }
+
+
+	/* printf("num_words: %d\n", input->total);
+	for (int i = 0; i < input->total; i++) {
+		// printf("%s\n", vector_get(input, i));
+	} */
