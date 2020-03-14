@@ -2,14 +2,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include "vector.h"
-#include "set.h"
 #include <stdbool.h>
+#include "set.h"
+#include "horspool.h"
 #include "Q1.h"
 
 void read_file(char* filename) {
 	FILE* f = fopen(filename, "r");
 	if (!f) exit(EXIT_FAILURE);
 
+	/* set stuff */
 	char buffer[1000]; buffer[0] = '\0';
 	char *toAdd = NULL;
 	simple_set* words = malloc(sizeof(simple_set));
@@ -21,7 +23,26 @@ void read_file(char* filename) {
 		set_add(words, buffer);
 	}
 
-	return words;
+	uint64_t num_words;
+	char** arr = set_to_array(words, &num_words);
+
+	/* word counts with horspool */
+	unsigned long text_length;
+	rewind(f);
+	fseek(f, 0, SEEK_END);
+	text_length = ftell(f);
+	fseek(f, 0, SEEK_SET);
+
+    char* text = malloc(sizeof(char) * (text_length + 1));
+	if (!text) abort();
+	fread(text, sizeof(char), text_length, f);
+	text[text_length] = '\0';
+
+	printf("num_words: %d\n", num_words);
+	for (int i = 0; i < num_words; i++) {
+		printf("word: [%s], count: %d\n", arr[i], horspool(text, arr[i]));
+	}
+
 }
 
 node* node_constructor(char* key, double probability) {

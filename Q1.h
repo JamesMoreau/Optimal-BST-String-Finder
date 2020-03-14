@@ -16,7 +16,7 @@ struct node {
 	node* children[2];
 };
 
-vector* read_file(char* filename);
+void read_file(char* filename);
 node* node_constructor(char* key, double probability);
 void insert_node(node** current, node* new_node);
 int* in_vector(vector* v, char* key);
