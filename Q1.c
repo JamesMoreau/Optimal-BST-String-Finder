@@ -89,6 +89,9 @@ int main() {
 		printf("word: [%s], count: %d\n", node->key, node->frequency);
 	}
 
+	node* root = NULL;
+	// for(...) start inserting nodes here!
+
 	return 1;
 }
 
