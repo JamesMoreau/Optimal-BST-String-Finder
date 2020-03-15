@@ -49,6 +49,8 @@ vector* read_file(char* filename) {
 		vector_add(frequency_table, node_constructor(word, frequency));
 	}
 
+	free(arr);
+
 	return frequency_table;
 }
 
@@ -81,19 +83,40 @@ void insert_node(node** current, node* new_node) {
 	}
 }
 
-int main() {
-	vector* words = read_file("data_7.txt");
-
-	for (int i = 0; i < words->total; i++) {
-		node* node = vector_get(words, i);
-		printf("word: [%s], count: %d\n", node->key, node->frequency);
+void print_table(int** arr) {
+	printf("_____TABLE_____\n");
+	for (int i = 0; i < 601; i++) {
+		for (int j = 0; j < 601; j++) {
+			printf ("%d ", arr[i][j]);
+		}
+		printf("\n");
 	}
+}
 
-	node* root = NULL;
-	// for(...) start inserting nodes here!
+void fill_zeroes(cell** table) {
+	for (int i = 0; i < 601; i++) {
+		table[i][i].value = 0;
+	}
+}
+
+int main() {
+	vector* test_data = malloc(sizeof(vector));
+	vector_init(test_data);
+
+	node data1;
+	data1.key = "A";
+	data1.frequency = 1;
+
+
+	cell test_table[601][601];
 
 	return 1;
 }
+/* 	vector* words = read_file("data_7.txt");
+	for (int i = 0; i < words->total; i++) {
+		node* node = vector_get(words, i);
+		printf("word: [%s], count: %d\n", node->key, node->frequency);
+	}*/
 
 
 	/* printf("num_words: %d\n", input->total);

@@ -11,9 +11,14 @@ struct node {
 	node* children[2];
 };
 
+typedef struct {
+	double value;
+	node* root;
+} cell;
+
 vector* read_file(char* filename);
 node* node_constructor(char* key, int frequency);
 void insert_node(node** current, node* new_node);
-int* in_vector(vector* v, char* key);
+void print_table(int** arr);
 
 #endif
