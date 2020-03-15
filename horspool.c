@@ -16,6 +16,12 @@ void horspool_shift_table(char* p, int table[]) {
 }
 
 int horspool(char* text, char* pattern) {
+    if (!text || 
+        text[0] == '\0' ||
+        !pattern ||
+        pattern[0] == '\0'
+        ) return 0;
+
     int table[500] = {0};
     int pattern_length = strlen(pattern);
     int text_length = strlen(text);

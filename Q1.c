@@ -7,7 +7,7 @@
 #include "horspool.h"
 #include "Q1.h"
 
-void read_file(char* filename) {
+vector* read_file(char* filename) {
 	FILE* f = fopen(filename, "r");
 	if (!f) exit(EXIT_FAILURE);
 
@@ -31,28 +31,35 @@ void read_file(char* filename) {
 	rewind(f);
 	fseek(f, 0, SEEK_END);
 	text_length = ftell(f);
-	fseek(f, 0, SEEK_SET);
+	rewind(f);
 
     char* text = malloc(sizeof(char) * (text_length + 1));
 	if (!text) abort();
 	fread(text, sizeof(char), text_length, f);
 	text[text_length] = '\0';
 
+	vector* frequency_table = malloc(sizeof(vector));
+	vector_init(frequency_table);
+
 	printf("num_words: %d\n", num_words);
 	for (int i = 0; i < num_words; i++) {
-		printf("word: [%s], count: %d\n", arr[i], horspool(text, arr[i]));
+		char* word = arr[i];
+		int frequency = horspool(text, word);
+		
+		vector_add(frequency_table, node_constructor(word, frequency));
 	}
 
+	return frequency_table;
 }
 
-node* node_constructor(char* key, double probability) {
+node* node_constructor(char* key, int frequency) {
 	node* new_node = malloc(sizeof(node));
 	if (!new_node) exit(EXIT_FAILURE);
 	
 	new_node->key = malloc(sizeof(char) * (strlen(key) + 1));
 	strcpy(new_node->key, key);
 
-	new_node->probability = probability;
+	new_node->frequency = frequency;
 	
 	new_node->children[0] = NULL;
 	new_node->children[1] = NULL;
@@ -75,8 +82,12 @@ void insert_node(node** current, node* new_node) {
 }
 
 int main() {
-	read_file("data_7.txt");
+	vector* words = read_file("data_7.txt");
 
+	for (int i = 0; i < words->total; i++) {
+		node* node = vector_get(words, i);
+		printf("word: [%s], count: %d\n", node->key, node->frequency);
+	}
 
 	return 1;
 }
