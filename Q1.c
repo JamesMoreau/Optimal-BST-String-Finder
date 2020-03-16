@@ -84,7 +84,7 @@ void insert_node(node** current, node* new_node) {
 }
 
 void print_table(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
-	printf("__________TABLE__________\n");
+	printf("______________TABLE______________\n");
 	for (int i = 0; i < TABLE_ROWS; i++) {
 		for (int j = 0; j < TABLE_COLUMNS; j++) {
 			printf ("%d\t", table[i][j].value);
@@ -94,14 +94,26 @@ void print_table(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
 }
 
 void print_diagonals(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
-	printf("________DIAGONALS________\n");
-	for (int i = 2; i <= TABLE_ROWS; i++) { //Iterate over diagonals of the matrix
-		for (int j = 0; j < TABLE_COLUMNS - i + 1; j++) {
-			int k = j + i - 1;
-			printf ("%d\t", table[j][k].value);
+	printf("____________DIAGONALS____________\n");
+	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
+		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
+			int j = i + k - 1;
+			printf ("%d\t", table[i][j].value);
 		}
 		printf("\n");
 	}
+}
+
+void print_weights(cell table[TABLE_ROWS][TABLE_COLUMNS], vector* data) {
+	printf("_____________WEIGHTS_____________\n");
+	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
+		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
+			int j = i + k - 1;
+			printf("W: %d\t", weight(data, i, j));
+		}
+		printf("\n");
+	}
+	
 }
 
 void fill_zeroes(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
@@ -152,6 +164,15 @@ int main() {
 
 	print_table(test_table);
 	print_diagonals(test_table);
+	print_weights(test_table, &test_data);
+
+	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
+		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
+			int j = i + k - 1;
+			printf ("i: %d, j: %d\t", i, j);
+		}
+		printf("\n");
+	}
 	
 	printf("\nWeight: %d\n", weight(&test_data, 1, 3));
 
