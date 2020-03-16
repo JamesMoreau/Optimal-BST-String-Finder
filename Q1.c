@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "vector.h"
 #include <stdbool.h>
+#include <limits.h>
+#include "vector.h"
 #include "set.h"
 #include "horspool.h"
 #include "Q1.h"
@@ -113,7 +114,17 @@ void print_weights(cell table[TABLE_ROWS][TABLE_COLUMNS], vector* data) {
 		}
 		printf("\n");
 	}
-	
+}
+
+void print_minimums(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
+	printf("___________MINIMUMS___________\n");
+	for (int k = 2; k <= TABLE_ROWS; k++) {
+		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
+			int j = i + k - 1;
+			printf("M: %d\t", minimum_cost(table, i, j));
+		}
+		printf("\n");
+	}
 }
 
 void fill_zeroes(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
@@ -135,7 +146,7 @@ int weight(vector* v, int i, int j) {
 }
 
 int minimum_cost(cell C[TABLE_ROWS][TABLE_COLUMNS], int i, int j) {
-	int minimum = INT_MAX;
+	int minimum = 10000;
 	
 	for (int k = i; k <= j; k++) {
 		int cost = C[i][k - 1].value + C[k + 1][j].value;
@@ -178,14 +189,15 @@ int main() {
 	print_table(test_table);
 	print_diagonals(test_table);
 	print_weights(test_table, &test_data);
+	print_minimums(test_table);
 
-	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
+	/* for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
 			//? are the i indeces starting at 1 (int diagram) important?
 			test_table[i][j].value = minimum_cost(test_table, i, j) + weight(&test_data, i, j); 
 		}
-	}
+	} */
 
 	print_table(test_table);
 
