@@ -152,7 +152,7 @@ int main() {
 		printf("\n");
 	}
 
-	printf("\nWeight: %d\n", weight(&test_data, 0, 2));
+	printf("\nWeight: %d\n", weight(&test_data, 1, 3));
 
 	return 1;
 }
