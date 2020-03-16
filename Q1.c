@@ -83,35 +83,58 @@ void insert_node(node** current, node* new_node) {
 	}
 }
 
-void print_table(int** arr) {
-	printf("_____TABLE_____\n");
-	for (int i = 0; i < 601; i++) {
-		for (int j = 0; j < 601; j++) {
-			printf ("%d ", arr[i][j]);
+void print_table(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
+	printf("______TABLE______\n");
+	for (int i = 0; i < TABLE_ROWS - 1; i++) {
+		for (int j = 0; j < TABLE_COLUMNS - 1; j++) {
+			printf ("%.0lf\t", table[i][j].value);
 		}
 		printf("\n");
 	}
 }
 
-void fill_zeroes(cell** table) {
-	for (int i = 0; i < 601; i++) {
-		table[i][i].value = 0;
+void fill_zeroes(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
+	for (int i = 0; i < TABLE_ROWS - 1; i++) {
+		for (int j = 0; j < TABLE_COLUMNS - 1; j++) {
+			table[i][j].value = 0;
+		}
 	}
 }
 
 int main() {
-	vector* test_data = malloc(sizeof(vector));
-	vector_init(test_data);
+	vector test_data;
+	vector_init(&test_data);
 
 	node data1;
 	data1.key = "A";
 	data1.frequency = 1;
+	vector_add(&test_data, &data1);
+	
+	node data2;
+	data2.key = "B";
+	data2.frequency = 2;
+	vector_add(&test_data, &data2);
 
+	node data3;
+	data3.key = "C";
+	data3.frequency = 4;
+	vector_add(&test_data, &data3);
 
-	cell test_table[601][601];
+	node data4;
+	data4.key = "D";
+	data4.frequency = 3;
+	vector_add(&test_data, &data4);
+	
+	cell test_table[TABLE_ROWS][TABLE_COLUMNS];
+	
+	fill_zeroes(test_table);
+
+	print_table(test_table);
 
 	return 1;
 }
+
+//!use this to read file
 /* 	vector* words = read_file("data_7.txt");
 	for (int i = 0; i < words->total; i++) {
 		node* node = vector_get(words, i);
