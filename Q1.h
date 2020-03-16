@@ -27,5 +27,6 @@ void print_diagonals(cell table[TABLE_ROWS][TABLE_COLUMNS]);
 void print_weights(cell table[TABLE_ROWS][TABLE_COLUMNS], vector* test_data);
 void fill_zeroes(cell table[TABLE_ROWS][TABLE_COLUMNS]);
 int weight(vector* v, int i, int j);
+int minimum_cost(cell C[TABLE_ROWS][TABLE_COLUMNS], int i, int j);
 
 #endif

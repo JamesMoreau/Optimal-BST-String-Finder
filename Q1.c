@@ -95,7 +95,7 @@ void print_table(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
 
 void print_diagonals(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
 	printf("____________DIAGONALS____________\n");
-	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
+	for (int k = 2; k <= TABLE_ROWS; k++) {
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
 			printf ("%d\t", table[i][j].value);
@@ -106,7 +106,7 @@ void print_diagonals(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
 
 void print_weights(cell table[TABLE_ROWS][TABLE_COLUMNS], vector* data) {
 	printf("_____________WEIGHTS_____________\n");
-	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
+	for (int k = 2; k <= TABLE_ROWS; k++) {
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
 			printf("W: %d\t", weight(data, i, j));
@@ -119,7 +119,7 @@ void print_weights(cell table[TABLE_ROWS][TABLE_COLUMNS], vector* data) {
 void fill_zeroes(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
 	for (int i = 0; i < TABLE_ROWS; i++) {
 		for (int j = 0; j < TABLE_COLUMNS; j++) {
-			table[i][j].value = i + j;
+			table[i][j].value = 0;
 		}
 	}
 }
@@ -132,6 +132,19 @@ int weight(vector* v, int i, int j) {
 	}
 
 	return (sum);
+}
+
+int minimum_cost(cell C[TABLE_ROWS][TABLE_COLUMNS], int i, int j) {
+	int minimum = -1;
+	
+	for (int k = i; k <= j; k++) {
+		int cost = C[i][k - 1].value + C[k + 1][j].value;
+		if (cost < minimum) {
+			minimum = cost;
+		}
+	}
+
+	return minimum;
 }
 
 int main() {
@@ -169,13 +182,13 @@ int main() {
 	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
-			printf ("i: %d, j: %d\t", i, j);
+			test_table[i][j].value = minimum_cost(test_table, i, j) + weight(&test_data, i, j);
 		}
-		printf("\n");
 	}
-	
-	printf("\nWeight: %d\n", weight(&test_data, 1, 3));
 
+	print_table(test_table);
+
+	printf("END\n");
 	return 1;
 }
 
