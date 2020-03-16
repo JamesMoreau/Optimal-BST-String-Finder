@@ -93,6 +93,17 @@ void print_table(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
 	}
 }
 
+void print_diagonals(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
+	printf("________DIAGONALS________\n");
+	for (int i = 2; i <= TABLE_ROWS; i++) { //Iterate over diagonals of the matrix
+		for (int j = 0; j < TABLE_COLUMNS - i + 1; j++) {
+			int k = j + i - 1;
+			printf ("%d\t", table[j][k].value);
+		}
+		printf("\n");
+	}
+}
+
 void fill_zeroes(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
 	for (int i = 0; i < TABLE_ROWS; i++) {
 		for (int j = 0; j < TABLE_COLUMNS; j++) {
@@ -140,16 +151,8 @@ int main() {
 	fill_zeroes(test_table);
 
 	print_table(test_table);
-
-	//Iterate over diagonals of the matrix
-	printf("\nDIAGONALS\n");
-	for (int i = 2; i <= 4; i++) {
-		for (int j = 0; j < 4 - i + 1; j++) {
-			int k = j + i - 1;
-			printf ("%d\t", test_table[j][k].value);
-		}
-		printf("\n");
-	}
+	print_diagonals(test_table);
+	
 	printf("\nWeight: %d\n", weight(&test_data, 1, 3));
 
 	return 1;

@@ -23,6 +23,7 @@ vector* read_file(char* filename);
 node* node_constructor(char* key, int frequency);
 void insert_node(node** current, node* new_node);
 void print_table(cell table[TABLE_ROWS][TABLE_COLUMNS]);
+void print_diagonals(cell table[TABLE_ROWS][TABLE_COLUMNS]);
 void fill_zeroes(cell table[TABLE_ROWS][TABLE_COLUMNS]);
 int weight(vector* v, int i, int j);
 
