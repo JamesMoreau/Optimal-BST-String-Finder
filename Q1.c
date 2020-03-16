@@ -182,7 +182,8 @@ int main() {
 	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
-			test_table[i][j].value = minimum_cost(test_table, i, j) + weight(&test_data, i, j);
+			//? are the i indeces starting at 1 (int diagram) important?
+			test_table[i][j].value = minimum_cost(test_table, i, j) + weight(&test_data, i, j); 
 		}
 	}
 
