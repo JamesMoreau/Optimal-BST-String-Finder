@@ -87,7 +87,7 @@ void print_table(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
 	printf("______TABLE______\n");
 	for (int i = 0; i < TABLE_ROWS - 1; i++) {
 		for (int j = 0; j < TABLE_COLUMNS - 1; j++) {
-			printf ("%.0lf\t", table[i][j].value);
+			printf ("%d\t", table[i][j].value);
 		}
 		printf("\n");
 	}
@@ -96,9 +96,19 @@ void print_table(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
 void fill_zeroes(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
 	for (int i = 0; i < TABLE_ROWS - 1; i++) {
 		for (int j = 0; j < TABLE_COLUMNS - 1; j++) {
-			table[i][j].value = 0;
+			table[i][j].value = i + j;
 		}
 	}
+}
+
+int weight(vector* v, int i, int j) {
+	int sum = 0;
+	for (int s = i; s < j; s++) {
+		node* temp = (node*) vector_get(v, s);
+		sum += temp->frequency;
+	}
+
+	return (sum);
 }
 
 int main() {
@@ -131,8 +141,36 @@ int main() {
 
 	print_table(test_table);
 
+	printf("\nDIAGONALS\n");
+	for (int i = 0 ; i < 3 * 2; i++) {
+		for (int j = 0 ; j <= i; j++ ) {
+			int l = i - j;
+			if(l < 3 && j < 3) {
+				printf ("%d\t", test_table[l][j].value);
+			}
+		}
+		printf("\n");
+	}
+
+	printf("\nWeight: %d\n", weight(&test_data, 0, 2));
+
 	return 1;
 }
+
+/* for (int i = 1; i < TABLE_ROWS - 1; i++) {
+	for (int j = 1; j < TABLE_COLUMNS - 1; j++) {
+		int l = j - i;
+		if (l > 0) {
+			printf("i = %d, j = %d is in the right side.\n", i, j);
+
+			l 
+		}
+	}
+} */
+
+/* for (int i = 0; i < TABLE_ROWS - 1; i++) {
+	for (int j = 0; j <)
+} */
 
 //!use this to read file
 /* 	vector* words = read_file("data_7.txt");

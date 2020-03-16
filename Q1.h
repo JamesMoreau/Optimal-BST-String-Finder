@@ -15,7 +15,7 @@ struct node {
 };
 
 typedef struct {
-	double value;
+	int value;
 	node* root;
 } cell;
 
