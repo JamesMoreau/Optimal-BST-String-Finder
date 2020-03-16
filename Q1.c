@@ -135,7 +135,7 @@ int weight(vector* v, int i, int j) {
 }
 
 int minimum_cost(cell C[TABLE_ROWS][TABLE_COLUMNS], int i, int j) {
-	int minimum = -1;
+	int minimum = INT_MAX;
 	
 	for (int k = i; k <= j; k++) {
 		int cost = C[i][k - 1].value + C[k + 1][j].value;
