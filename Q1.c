@@ -5,7 +5,6 @@
 #include <limits.h>
 #include "vector.h"
 #include "set.h"
-#include "horspool.h"
 #include "Q1.h"
 
 vector* read_file(char* filename) {
@@ -38,7 +37,6 @@ vector* read_file(char* filename) {
 	uint64_t num_words;
 	char** arr = set_to_array(words, &num_words);
 
-	/* word counts with horspool */
 	unsigned long text_length;
 	rewind(f);
 	fseek(f, 0, SEEK_END);
@@ -53,10 +51,9 @@ vector* read_file(char* filename) {
 	vector* frequency_table = malloc(sizeof(vector));
 	vector_init(frequency_table);
 
-	printf("num_words: %d\n", num_words);
 	for (int i = 0; i < num_words; i++) {
 		char* word = arr[i];
-		int frequency = horspool(text, word);
+		int frequency = num_occurences(text, text_length, word, strlen(word));
 		
 		vector_add(frequency_table, node_constructor(word, frequency));
 	}
@@ -64,6 +61,27 @@ vector* read_file(char* filename) {
 	free(arr);
 
 	return frequency_table;
+}
+
+int num_occurences(char* text, int text_length, char* pattern, int pattern_length) {
+	int count = 0;
+	for (long int i = 0; i < text_length - pattern_length; i++) {
+        bool found = brute_force_string_match(pattern, text, i);
+        if (found)
+            count++;
+    }
+}
+
+bool brute_force_string_match(const char* p, const char* t, long int i){
+    int pattern_length = strlen(p);
+    int count = 0;
+
+    for (int j = 0; j < pattern_length; j++) {
+        if (p[j] == t[j + i])
+            count++;
+    }
+
+    return (count == pattern_length);
 }
 
 node* node_constructor(char* key, int frequency) {
@@ -95,7 +113,7 @@ void insert_node(node** current, node* new_node) {
 	}
 }
 
-void print_table(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
+void print_table(cell** table) {
 	printf("______________TABLE______________\n");
 	for (int i = 0; i < TABLE_ROWS; i++) {
 		for (int j = 0; j < TABLE_COLUMNS; j++) {
@@ -105,7 +123,7 @@ void print_table(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
 	}
 }
 
-void print_diagonals(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
+void print_diagonals(cell** table) {
 	printf("____________DIAGONALS____________\n");
 	for (int k = 2; k <= TABLE_ROWS; k++) {
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
@@ -116,7 +134,7 @@ void print_diagonals(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
 	}
 }
 
-void print_weights(cell table[TABLE_ROWS][TABLE_COLUMNS], vector* data) {
+void print_weights(cell** table, vector* data) {
 	printf("_____________WEIGHTS_____________\n");
 	for (int k = 2; k <= TABLE_ROWS; k++) {
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
@@ -127,7 +145,7 @@ void print_weights(cell table[TABLE_ROWS][TABLE_COLUMNS], vector* data) {
 	}
 }
 
-void print_minimums(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
+void print_minimums(cell** table) {
 	printf("___________MINIMUMS___________\n");
 	for (int k = 2; k <= TABLE_ROWS; k++) {
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
@@ -138,12 +156,14 @@ void print_minimums(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
 	}
 }
 
-void fill_zeroes(cell table[TABLE_ROWS][TABLE_COLUMNS]) {
-	for (int i = 0; i < TABLE_ROWS; i++) {
-		for (int j = 0; j < TABLE_COLUMNS; j++) {
+void fill_zeroes(cell** table) {
+	printf("before fill zeroes\n");
+	for (int i = 0; i < 600; i++) {
+		for (int j = 0; j < 600; j++) {
 			table[i][j].value = 0;
 		}
 	}
+	printf("after fill zeroes\n");
 }
 
 int weight(vector* v, int i, int j) {
@@ -156,14 +176,12 @@ int weight(vector* v, int i, int j) {
 	return (sum);
 }
 
-//TODO these minimum costs are not correct.
-int minimum_cost(cell C[TABLE_ROWS][TABLE_COLUMNS], int i, int j) {
-	//@workaround if we are in the second diagonal, the minimum should be 0. 
+int minimum_cost(cell** C, int i, int j) {
 	int minimum = 10000;
 
 	for (int k = i + 1; k <= j; k++) {
-		printf("C[i][k-1] = %d, i = %d, k = %d, j = %d\n", C[i][k - 1].value, i, k, j);
-		printf("C[k][j] = %d, i = %d, k = %d, j = %d\n", C[k][j].value, i , k, j);
+		// printf("C[i][k-1] = %d, i = %d, k = %d, j = %d\n", C[i][k - 1].value, i, k, j);
+		// printf("C[k][j] = %d, i = %d, k = %d, j = %d\n", C[k][j].value, i , k, j);
 		int cost = C[i][k - 1].value + C[k][j].value;
 		if (cost < minimum) {
 			minimum = cost;
@@ -181,27 +199,41 @@ int compare_keys(const void* a, const void* b) {
 
 int main() {
 	vector* words = read_file("data_7.txt");
-
-	node* first_node = (node*)words->items[0];
-	printf("word first: %s\n", first_node->key);
 	qsort(words->items, words->total, sizeof(node*), compare_keys);
+	printf("number of words: %d\n", words->total);
 
-	for (int i = 0; i < words->total; i++) {
-		node* node = vector_get(words, i);
-		printf("word: [%s], count: %d\n", node->key, node->frequency);
+	cell** words_table = calloc(601, sizeof(cell*));
+	for (int i = 0; i < 601; i++) {
+		words_table[i] = calloc(601, sizeof(cell));
 	}
-
-
+	fill_zeroes(words_table);
+	printf("before loop\n");
+	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
+		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
+			int j = i + k - 1;
+			words_table[i][j].value = minimum_cost(words_table, i, j);  //weight(words, i, j); 
+		}
+	}
+	printf("after loop\n");
 
 	/* printf("num_words: %d\n", input->total);
 	for (int i = 0; i < input->total; i++) {
 		printf("%s\n", vector_get(input, i));
 	}
  */
+	for (int i = 0; i < 601; i++) {
+		free(words_table[i]);
+	}
+	free(words_table);
+
 	printf("END\n");
 	return 1;
 }
 
+	/* for (int i = 0; i < words->total; i++) {
+		node* node = vector_get(words, i);
+		printf("word: [%s], count: %d\n", node->key, node->frequency);
+	} */
 	/* vector test_data;
 	vector_init(&test_data);
 
@@ -233,13 +265,7 @@ int main() {
 	print_weights(test_table, &test_data);
 	// print_minimums(test_table);
 
-	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
-		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
-			int j = i + k - 1;
-			//? are the i indeces starting at 1 (int diagram) important?
-			test_table[i][j].value = minimum_cost(test_table, i, j) + weight(&test_data, i, j); 
-		}
-	}
+	
 
 	print_table(test_table);
 	vector_free(&test_data); */
