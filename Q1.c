@@ -145,9 +145,14 @@ int weight(vector* v, int i, int j) {
 	return (sum);
 }
 
+//TODO these minimum costs are not correct.
 int minimum_cost(cell C[TABLE_ROWS][TABLE_COLUMNS], int i, int j) {
+	if (i == 0 || //@workaround if we are in the second diagonal, the minimum should be 0. 
+		j == TABLE_COLUMNS - 1)
+		return 0;
 	int minimum = 10000;
-	
+
+	//!doesn't work if i is 0
 	for (int k = i; k <= j; k++) {
 		int cost = C[i][k - 1].value + C[k + 1][j].value;
 		if (cost < minimum) {
@@ -183,7 +188,6 @@ int main() {
 	vector_add(&test_data, &data4);
 	
 	cell test_table[TABLE_ROWS][TABLE_COLUMNS];
-	
 	fill_zeroes(test_table);
 
 	print_table(test_table);
@@ -200,6 +204,7 @@ int main() {
 	} */
 
 	print_table(test_table);
+	vector_free(&test_data);
 
 	printf("END\n");
 	return 1;
