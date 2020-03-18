@@ -18,9 +18,20 @@ vector* read_file(char* filename) {
 	simple_set* words = malloc(sizeof(simple_set));
 	set_init(words);
 
+	int counter = 0;
 	while (!feof (f)) {
 		buffer[0] = '\0';
 		fscanf (f, "%s", buffer);
+		// printf("buffer: %s\n", buffer);
+		if (feof(f)) break;
+		if (counter  == 0) { // this removes garbage value of first word read in by fscanf
+			int length = strlen(buffer);
+			for (int i = 3; i < length; i++) {
+				buffer[i-3] = buffer[i];
+			}
+			buffer[length - 3] = '\0';
+		}
+		counter++;
 		set_add(words, buffer);
 	}
 
@@ -147,14 +158,13 @@ int weight(vector* v, int i, int j) {
 
 //TODO these minimum costs are not correct.
 int minimum_cost(cell C[TABLE_ROWS][TABLE_COLUMNS], int i, int j) {
-	if (i == 0 || //@workaround if we are in the second diagonal, the minimum should be 0. 
-		j == TABLE_COLUMNS - 1)
-		return 0;
+	//@workaround if we are in the second diagonal, the minimum should be 0. 
 	int minimum = 10000;
 
-	//!doesn't work if i is 0
-	for (int k = i; k <= j; k++) {
-		int cost = C[i][k - 1].value + C[k + 1][j].value;
+	for (int k = i + 1; k <= j; k++) {
+		printf("C[i][k-1] = %d, i = %d, k = %d, j = %d\n", C[i][k - 1].value, i, k, j);
+		printf("C[k][j] = %d, i = %d, k = %d, j = %d\n", C[k][j].value, i , k, j);
+		int cost = C[i][k - 1].value + C[k][j].value;
 		if (cost < minimum) {
 			minimum = cost;
 		}
@@ -163,8 +173,36 @@ int minimum_cost(cell C[TABLE_ROWS][TABLE_COLUMNS], int i, int j) {
 	return minimum;
 }
 
+int compare_keys(const void* a, const void* b) {
+	node* first = *(node**)a;
+	node* second = *(node**)b;
+	return (strcmp((char*)(*first).key, (char*)(*second).key));
+}
+
 int main() {
-	vector test_data;
+	vector* words = read_file("data_7.txt");
+
+	node* first_node = (node*)words->items[0];
+	printf("word first: %s\n", first_node->key);
+	qsort(words->items, words->total, sizeof(node*), compare_keys);
+
+	for (int i = 0; i < words->total; i++) {
+		node* node = vector_get(words, i);
+		printf("word: [%s], count: %d\n", node->key, node->frequency);
+	}
+
+
+
+	/* printf("num_words: %d\n", input->total);
+	for (int i = 0; i < input->total; i++) {
+		printf("%s\n", vector_get(input, i));
+	}
+ */
+	printf("END\n");
+	return 1;
+}
+
+	/* vector test_data;
 	vector_init(&test_data);
 
 	node data1;
@@ -193,32 +231,15 @@ int main() {
 	print_table(test_table);
 	print_diagonals(test_table);
 	print_weights(test_table, &test_data);
-	print_minimums(test_table);
+	// print_minimums(test_table);
 
-	/* for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
+	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
 			//? are the i indeces starting at 1 (int diagram) important?
 			test_table[i][j].value = minimum_cost(test_table, i, j) + weight(&test_data, i, j); 
 		}
-	} */
+	}
 
 	print_table(test_table);
-	vector_free(&test_data);
-
-	printf("END\n");
-	return 1;
-}
-
-//!use this to read file
-/* 	vector* words = read_file("data_7.txt");
-	for (int i = 0; i < words->total; i++) {
-		node* node = vector_get(words, i);
-		printf("word: [%s], count: %d\n", node->key, node->frequency);
-	}*/
-
-
-	/* printf("num_words: %d\n", input->total);
-	for (int i = 0; i < input->total; i++) {
-		// printf("%s\n", vector_get(input, i));
-	} */
+	vector_free(&test_data); */

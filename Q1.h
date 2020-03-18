@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include "vector.h"
 
 #ifndef __Q1__
 #define __Q1__
