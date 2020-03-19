@@ -38,17 +38,16 @@ vector* read_file(char* filename) {
 	uint64_t num_words;
 	char** arr = set_to_array(unique_words, &num_words);
 
-	vector* frequency_table = malloc(sizeof(vector));
-	vector_init(frequency_table);
+	vector* probability_table = malloc(sizeof(vector)); vector_init(probability_table);
 
 	for (int i = 0; i < num_words; i++) {
 		char* word = arr[i];
-		int frequency = num_occurences(all_words, word);
+		double probability = ((double) num_occurences(all_words, word)) / num_words;
 		
-		vector_add(frequency_table, node_constructor(word, frequency));
+		vector_add(probability_table, node_constructor(word, probability));
 	}
 
-	return frequency_table;
+	return probability_table;
 }
 
 char *strdup(const char *c) {
@@ -68,14 +67,14 @@ int num_occurences(vector* all_words, char* word) {
 	return (count);
 }
 
-node* node_constructor(char* key, int frequency) {
+node* node_constructor(char* key, double probability) {
 	node* new_node = malloc(sizeof(node));
 	if (!new_node) exit(EXIT_FAILURE);
 	
 	new_node->key = malloc(sizeof(char) * (strlen(key) + 1));
 	strcpy(new_node->key, key);
 
-	new_node->frequency = frequency;
+	new_node->probability = probability;
 	
 	new_node->children[0] = NULL;
 	new_node->children[1] = NULL;
@@ -101,7 +100,7 @@ void print_table(cell** table) {
 	printf("______________TABLE______________\n");
 	for (int i = 0; i < TABLE_ROWS; i++) {
 		for (int j = 0; j < TABLE_COLUMNS; j++) {
-			printf ("%d\t", table[i][j].value);
+			printf ("%.2lf\t", table[i][j].probability);
 		}
 		printf("\n");
 	}
@@ -112,7 +111,7 @@ void print_diagonals(cell** table) {
 	for (int k = 2; k <= TABLE_ROWS; k++) {
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
-			printf ("%d\t", table[i][j].value);
+			printf ("%.2lf\t", table[i][j].probability);
 		}
 		printf("\n");
 	}
@@ -143,29 +142,29 @@ void print_minimums(cell** table) {
 void fill_zeroes(cell** table) {
 	for (int i = 0; i < 600; i++) {
 		for (int j = 0; j < 600; j++) {
-			table[i][j].value = 0;
+			table[i][j].probability = 0;
 		}
 	}
 }
 
-int weight(vector* v, int i, int j) {
-	int sum = 0;
+double weight(vector* v, int i, int j) {
+	double sum = 0;
 	for (int s = i; s < j; s++) {
 		node* temp = (node*) vector_get(v, s);
-		sum += temp->frequency;
+		sum += temp->probability;
 	}
 
 	return (sum);
 }
 
 min minimum_cost(cell** C, int i, int j) {
-	int minimum = INT_MAX;
+	double minimum = INT_MAX;
 	int min_root_index = -1;
 	// printf("i: %d, j: %d\n", i, j);
 	for (int k = i + 1; k <= j; k++) {
 		// printf("C[i][k-1] = %d, i = %d, k = %d, j = %d\n", C[i][k - 1].value, i, k, j);
 		// printf("C[k][j] = %d, i = %d, k = %d, j = %d\n", C[k][j].value, i , k, j);
-		int cost = C[i][k - 1].value + C[k][j].value;
+		double cost = C[i][k - 1].probability + C[k][j].probability;
 		if (cost < minimum) {
 			minimum = cost;
 			min_root_index = k - 1;
@@ -201,7 +200,7 @@ int main() {
 			int j = i + k - 1;
 			
 			min min_struct = minimum_cost(words_table, i, j); 
-			words_table[i][j].value = min_struct.minimum + weight(words, i, j);
+			words_table[i][j].probability = min_struct.minimum + weight(words, i, j);
 			words_table[i][j].root = vector_get(words, min_struct.min_index);
 
 			printf("C[%d][%d].root: %s\n", i, j, words_table[i][j].root->key);
@@ -210,6 +209,8 @@ int main() {
 			// printf("here\n");
 		}
 	}
+
+	printf("average number of comparisons: %lf\n", words_table[0][600].probability);
 
 	printf("END\n");
 	return 1;
