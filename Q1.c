@@ -82,18 +82,22 @@ node* node_constructor(char* key, double probability) {
 	return new_node;
 }
 
-void insert_node(node** current, node* new_node) {
-	if (*current) {
-		//node already exists
-		if (strcmp((*current)->key, new_node->key) < 0) {
-			insert_node(&((*current)->children[0]), new_node);
-		} else {
-			insert_node(&((*current)->children[1]), new_node);
+int get_index(vector* words, node* to_find) {
+	for (int i = 0; i < words->total; i++) {
+		node* word_to_compare = vector_get(words, i);
+		if (strcmp(to_find->key, word_to_compare->key) == 0) {
+			return (i);
 		}
-	} else {
-		//put node at current
-		(*current) = new_node;
 	}
+
+	printf("INDEX NOT FOUND: SHOULD NOT HAPPEN");
+	exit(EXIT_FAILURE);
+}
+
+void make_tree(cell** C, vector* words) {
+	node* root = C[0][600].root;
+	int i = get_index(words, root);
+	printf("node with key: %s, has index %d\n", root->key, i);
 }
 
 void print_table(cell** table) {
@@ -191,37 +195,52 @@ int main() {
 	printf("number of words: %d\n", words->total);
 	for (int i = 0; i < words->total; i++) {
 		node* node = vector_get(words, i);
-		printf("word: [%s], count: %lf\n", node->key, node->probability);
+		// printf("word: [%s], count: %lf\n", node->key, node->probability);
 	} //print tool
 
 	/* initialize the table */
-	cell** words_table = calloc(TABLE_COLUMNS, sizeof(cell*));
+	cell** C = calloc(TABLE_COLUMNS, sizeof(cell*));
 	for (int i = 0; i < TABLE_COLUMNS; i++) {
-		words_table[i] = calloc(TABLE_COLUMNS, sizeof(cell));
+		C[i] = calloc(TABLE_COLUMNS, sizeof(cell));
 	}
-	fill_zeroes(words_table);
+	fill_zeroes(C);
 
 	//making table
 	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
 			
-			min min_struct = minimum_cost(words_table, i, j); 
-			words_table[i][j].probability = min_struct.minimum + weight(words, i, j);
-			words_table[i][j].root = vector_get(words, min_struct.min_index);
+			min min_struct = minimum_cost(C, i, j); 
+			C[i][j].probability = min_struct.minimum + weight(words, i, j);
+			C[i][j].root = vector_get(words, min_struct.min_index);
 
-			printf("C[%d][%d].root: %s\n", i, j, words_table[i][j].root->key);
+			// printf("C[%d][%d].root: %s\n", i, j, C[i][j].root->key); //useful
 			// printf("i: %d, j: %d, k: %d\n", i, j, k);
 			// printf("min_root_index: %d\n", min_struct.min_index);
 			// printf("here\n");
 		}
 	}
 
-	printf("average number of comparisons: %lf\n", words_table[0][600].probability);
+	printf("average number of comparisons: %lf\n", C[0][600].probability);
+
+	make_tree(C, words);
 
 	printf("END\n");
 	return 1;
 }
+/* void insert_node(node** current, node* new_node) {
+	if (*current) {
+		//node already exists
+		if (strcmp((*current)->key, new_node->key) < 0) {
+			insert_node(&((*current)->children[0]), new_node);
+		} else {
+			insert_node(&((*current)->children[1]), new_node);
+		}
+	} else {
+		//put node at current
+		(*current) = new_node;
+	}
+} */
 	
 	/* vector test_data;
 	vector_init(&test_data);

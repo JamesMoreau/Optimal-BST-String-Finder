@@ -25,16 +25,25 @@ typedef struct {
 	int minimum;
 } min;
 
-vector* read_file(char* filename);
-node* node_constructor(char* key, double probability);
-void insert_node(node** current, node* new_node);
+/* printing tools */
 void print_table(cell** table);
 void print_diagonals(cell** table);
 void print_weights(cell** table, vector* test_data);
 void print_minimums(cell** table);
-void fill_zeroes(cell** table);
-double weight(vector* v, int i, int j);
+
+/* tree stuff */
+node* node_constructor(char* key, double probability);
+void make_tree(cell** C, vector* words);
+int get_index(vector* words, node* to_find);
+
+/* algorithm */
 min minimum_cost(cell** C, int i, int j);
+double weight(vector* v, int i, int j);
+
+/* setup */
+vector* read_file(char* filename);
 int num_occurences(vector*, char*);
+void fill_zeroes(cell** table);
 char *strdup(const char *c);
+
 #endif
