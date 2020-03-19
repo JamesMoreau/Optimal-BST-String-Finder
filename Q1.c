@@ -188,6 +188,12 @@ int main() {
 	vector* words = read_file("data_7.txt");
 	qsort(words->items, words->total, sizeof(node*), compare_keys);
 
+	printf("number of words: %d\n", words->total);
+	for (int i = 0; i < words->total; i++) {
+		node* node = vector_get(words, i);
+		printf("word: [%s], count: %lf\n", node->key, node->probability);
+	} //print tool
+
 	/* initialize the table */
 	cell** words_table = calloc(TABLE_COLUMNS, sizeof(cell*));
 	for (int i = 0; i < TABLE_COLUMNS; i++) {
@@ -195,6 +201,7 @@ int main() {
 	}
 	fill_zeroes(words_table);
 
+	//making table
 	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
@@ -215,13 +222,6 @@ int main() {
 	printf("END\n");
 	return 1;
 }
-	/* printf("number of words: %d\n", words->total);
-	for (int i = 0; i < words->total; i++) {
-		node* node = vector_get(words, i);
-		printf("word: [%s], count: %d\n", node->key, node->frequency);
-	} */
-	
-
 	
 	/* vector test_data;
 	vector_init(&test_data);
@@ -253,8 +253,6 @@ int main() {
 	print_diagonals(test_table);
 	print_weights(test_table, &test_data);
 	// print_minimums(test_table);
-
-	
 
 	print_table(test_table);
 	vector_free(&test_data); */
