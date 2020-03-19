@@ -96,8 +96,20 @@ int get_index(vector* words, node* to_find) {
 
 void make_tree(cell** C, vector* words) {
 	node* root = C[0][600].root;
-	int i = get_index(words, root);
-	printf("node with key: %s, has index %d\n", root->key, i);
+	int index = get_index(words, root);
+	printf("node with key: %s, has index %d\n", root->key, index);
+
+	make_tree_recursive(C, words, 0, index - 1, vector_get(words, index));
+	make_tree_recursive(C, words, index, words->total, vector_get(words, index));
+}
+
+node* make_tree_recursive(cell** C, vector* words, int left_bound, int right_bound, node* parent) {
+	if (left_bound == right_bound) {
+		return;
+	}
+
+	int index = 0;
+	parent->children[0] = C[left_bound][right_bound].root;
 }
 
 void print_table(cell** table) {
