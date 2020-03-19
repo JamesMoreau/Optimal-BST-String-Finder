@@ -203,22 +203,13 @@ int main() {
 	vector* words = read_file("data_7.txt");
 	qsort(words->items, words->total, sizeof(node*), compare_keys);
 
-	printf("number of words: %d\n", words->total);
-	for (int i = 0; i < words->total; i++) {
-		node* node = vector_get(words, i);
-		printf("word: [%s], count: %d\n", node->key, node->frequency);
+	cell** words_table = calloc(TABLE_COLUMNS, sizeof(cell*));
+	for (int i = 0; i < TABLE_COLUMNS; i++) {
+		words_table[i] = calloc(TABLE_COLUMNS, sizeof(cell));
 	}
+	fill_zeroes(words_table);
 
-	printf("END\n");
-	return 1;
-}
-	/* cell** words_table = calloc(601, sizeof(cell*));
-	for (int i = 0; i < 601; i++) {
-		words_table[i] = calloc(601, sizeof(cell));
-	}
-	fill_zeroes(words_table); */
-
-	/* printf("before loop\n");
+	printf("before loop\n");
 	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
@@ -231,7 +222,17 @@ int main() {
 			printf("C[i][j].root: %s\n", words_table[i][j].root->key);
 		}
 	}
-	printf("after loop\n"); */
+	printf("after loop\n");
+
+	printf("END\n");
+	return 1;
+}
+	/* printf("number of words: %d\n", words->total);
+	for (int i = 0; i < words->total; i++) {
+		node* node = vector_get(words, i);
+		printf("word: [%s], count: %d\n", node->key, node->frequency);
+	} */
+	
 
 	
 	/* vector test_data;
