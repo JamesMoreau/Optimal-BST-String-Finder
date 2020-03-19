@@ -11,18 +11,17 @@ vector* read_file(char* filename) {
 	FILE* f = fopen(filename, "r");
 	if (!f) exit(EXIT_FAILURE);
 
-	/* set stuff */
 	char buffer[1000]; buffer[0] = '\0';
-	char *toAdd = NULL;
-	simple_set* words = malloc(sizeof(simple_set));
-	set_init(words);
+
+	simple_set* unique_words = malloc(sizeof(simple_set)); set_init(unique_words);
+	vector* all_words = malloc(sizeof(vector)); vector_init(all_words);
 
 	int counter = 0;
 	while (!feof (f)) {
 		buffer[0] = '\0';
 		fscanf (f, "%s", buffer);
-		// printf("buffer: %s\n", buffer);
 		if (feof(f)) break;
+		
 		if (counter  == 0) { // this removes garbage value of first word read in by fscanf
 			int length = strlen(buffer);
 			for (int i = 3; i < length; i++) {
@@ -30,46 +29,43 @@ vector* read_file(char* filename) {
 			}
 			buffer[length - 3] = '\0';
 		}
+
 		counter++;
-		set_add(words, buffer);
+		vector_add(all_words, strdup(buffer));
+		set_add(unique_words, buffer);
 	}
 
 	uint64_t num_words;
-	char** arr = set_to_array(words, &num_words);
-
-	unsigned long text_length;
-	rewind(f);
-	fseek(f, 0, SEEK_END);
-	text_length = ftell(f);
-	rewind(f);
-
-    char* text = malloc(sizeof(char) * (text_length + 1));
-	if (!text) abort();
-	fread(text, sizeof(char), text_length, f);
-	text[text_length] = '\0';
+	char** arr = set_to_array(unique_words, &num_words);
 
 	vector* frequency_table = malloc(sizeof(vector));
 	vector_init(frequency_table);
 
 	for (int i = 0; i < num_words; i++) {
 		char* word = arr[i];
-		int frequency = num_occurences(text, text_length, word, strlen(word));
+		int frequency = num_occurences(all_words, word);
 		
 		vector_add(frequency_table, node_constructor(word, frequency));
 	}
 
-	free(arr);
-
 	return frequency_table;
 }
 
-int num_occurences(char* text, int text_length, char* pattern, int pattern_length) {
+char *strdup(const char *c) {
+	char *dup = malloc(strlen(c) + 1);
+	if (dup) strcpy(dup, c);
+	return (dup);
+}
+
+int num_occurences(vector* all_words, char* word) {
 	int count = 0;
-	for (long int i = 0; i < text_length - pattern_length; i++) {
-        bool found = brute_force_string_match(pattern, text, i);
-        if (found)
+	for (long int i = 0; i < all_words->total; i++) {
+		char* word_to_compare = vector_get(all_words, i);
+        if (strcmp(word, word_to_compare))
             count++;
     }
+
+	return (count);
 }
 
 bool brute_force_string_match(const char* p, const char* t, long int i){
@@ -206,14 +202,23 @@ int compare_keys(const void* a, const void* b) {
 int main() {
 	vector* words = read_file("data_7.txt");
 	qsort(words->items, words->total, sizeof(node*), compare_keys);
-	printf("number of words: %d\n", words->total);
 
-	cell** words_table = calloc(601, sizeof(cell*));
+	printf("number of words: %d\n", words->total);
+	for (int i = 0; i < words->total; i++) {
+		node* node = vector_get(words, i);
+		printf("word: [%s], count: %d\n", node->key, node->frequency);
+	}
+
+	printf("END\n");
+	return 1;
+}
+	/* cell** words_table = calloc(601, sizeof(cell*));
 	for (int i = 0; i < 601; i++) {
 		words_table[i] = calloc(601, sizeof(cell));
 	}
-	fill_zeroes(words_table);
-	printf("before loop\n");
+	fill_zeroes(words_table); */
+
+	/* printf("before loop\n");
 	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
@@ -226,26 +231,9 @@ int main() {
 			printf("C[i][j].root: %s\n", words_table[i][j].root->key);
 		}
 	}
-	printf("after loop\n");
+	printf("after loop\n"); */
 
-	/* printf("num_words: %d\n", input->total);
-	for (int i = 0; i < input->total; i++) {
-		printf("%s\n", vector_get(input, i));
-	}
- */
-	for (int i = 0; i < 601; i++) {
-		free(words_table[i]);
-	}
-	free(words_table);
-
-	printf("END\n");
-	return 1;
-}
-
-	/* for (int i = 0; i < words->total; i++) {
-		node* node = vector_get(words, i);
-		printf("word: [%s], count: %d\n", node->key, node->frequency);
-	} */
+	
 	/* vector test_data;
 	vector_init(&test_data);
 
