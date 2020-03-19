@@ -176,19 +176,25 @@ int weight(vector* v, int i, int j) {
 	return (sum);
 }
 
-int minimum_cost(cell** C, int i, int j) {
-	int minimum = 10000;
-
+min minimum_cost(cell** C, int i, int j) {
+	int minimum = INT_MAX;
+	int min_root_index = -1;
+	// printf("i: %d, j: %d\n", i, j);
 	for (int k = i + 1; k <= j; k++) {
 		// printf("C[i][k-1] = %d, i = %d, k = %d, j = %d\n", C[i][k - 1].value, i, k, j);
 		// printf("C[k][j] = %d, i = %d, k = %d, j = %d\n", C[k][j].value, i , k, j);
 		int cost = C[i][k - 1].value + C[k][j].value;
 		if (cost < minimum) {
 			minimum = cost;
+			min_root_index = k - 1;
 		}
 	}
 
-	return minimum;
+	min minimum_struct;
+	minimum_struct.min_index = min_root_index;
+	minimum_struct.minimum = minimum;
+
+	return minimum_struct;
 }
 
 int compare_keys(const void* a, const void* b) {
@@ -211,7 +217,13 @@ int main() {
 	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
-			words_table[i][j].value = minimum_cost(words_table, i, j);  //weight(words, i, j); 
+			// printf("i: %d, j: %d, k: %d\n", i, j, k);
+			min min_struct = minimum_cost(words_table, i, j); 
+			// printf("min_root_index: %d\n", min_struct.min_index);
+			words_table[i][j].value = min_struct.minimum + weight(words, i, j);
+			// printf("here\n");
+			words_table[i][j].root = vector_get(words, min_struct.min_index);
+			printf("C[i][j].root: %s\n", words_table[i][j].root->key);
 		}
 	}
 	printf("after loop\n");
