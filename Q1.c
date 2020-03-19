@@ -199,13 +199,15 @@ int main() {
 	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
-			// printf("i: %d, j: %d, k: %d\n", i, j, k);
+			
 			min min_struct = minimum_cost(words_table, i, j); 
-			// printf("min_root_index: %d\n", min_struct.min_index);
 			words_table[i][j].value = min_struct.minimum + weight(words, i, j);
-			// printf("here\n");
 			words_table[i][j].root = vector_get(words, min_struct.min_index);
-			printf("C[i][j].root: %s\n", words_table[i][j].root->key);
+
+			printf("C[%d][%d].root: %s\n", i, j, words_table[i][j].root->key);
+			// printf("i: %d, j: %d, k: %d\n", i, j, k);
+			// printf("min_root_index: %d\n", min_struct.min_index);
+			// printf("here\n");
 		}
 	}
 
