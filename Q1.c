@@ -61,7 +61,7 @@ int num_occurences(vector* all_words, char* word) {
 	int count = 0;
 	for (long int i = 0; i < all_words->total; i++) {
 		char* word_to_compare = vector_get(all_words, i);
-        if (strcmp(word, word_to_compare))
+        if (strcmp(word, word_to_compare) == 0)
             count++;
     }
 
