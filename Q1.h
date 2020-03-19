@@ -36,6 +36,5 @@ void fill_zeroes(cell** table);
 int weight(vector* v, int i, int j);
 min minimum_cost(cell** C, int i, int j);
 int num_occurences(vector*, char*);
-bool brute_force_string_match(const char* p, const char* t, long int i);
 char *strdup(const char *c);
 #endif

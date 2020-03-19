@@ -68,18 +68,6 @@ int num_occurences(vector* all_words, char* word) {
 	return (count);
 }
 
-bool brute_force_string_match(const char* p, const char* t, long int i){
-    int pattern_length = strlen(p);
-    int count = 0;
-
-    for (int j = 0; j < pattern_length; j++) {
-        if (p[j] == t[j + i])
-            count++;
-    }
-
-    return (count == pattern_length);
-}
-
 node* node_constructor(char* key, int frequency) {
 	node* new_node = malloc(sizeof(node));
 	if (!new_node) exit(EXIT_FAILURE);
@@ -153,13 +141,11 @@ void print_minimums(cell** table) {
 }
 
 void fill_zeroes(cell** table) {
-	printf("before fill zeroes\n");
 	for (int i = 0; i < 600; i++) {
 		for (int j = 0; j < 600; j++) {
 			table[i][j].value = 0;
 		}
 	}
-	printf("after fill zeroes\n");
 }
 
 int weight(vector* v, int i, int j) {
@@ -203,13 +189,13 @@ int main() {
 	vector* words = read_file("data_7.txt");
 	qsort(words->items, words->total, sizeof(node*), compare_keys);
 
+	/* initialize the table */
 	cell** words_table = calloc(TABLE_COLUMNS, sizeof(cell*));
 	for (int i = 0; i < TABLE_COLUMNS; i++) {
 		words_table[i] = calloc(TABLE_COLUMNS, sizeof(cell));
 	}
 	fill_zeroes(words_table);
 
-	printf("before loop\n");
 	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
@@ -222,7 +208,6 @@ int main() {
 			printf("C[i][j].root: %s\n", words_table[i][j].root->key);
 		}
 	}
-	printf("after loop\n");
 
 	printf("END\n");
 	return 1;
