@@ -94,22 +94,20 @@ int get_index(vector* words, node* to_find) {
 	exit(EXIT_FAILURE);
 }
 
-void make_tree(cell** C, vector* words) {
-	node* root = C[0][600].root;
+void make_tree_recursive(cell** C, vector* words, int left_bound, int right_bound, node** parent_child) {
+	printf("recursion!\n");
+	if (left_bound > right_bound ||
+		left_bound < 0 ||
+		right_bound > words->total) return;
+
+	node* root = C[left_bound][right_bound].root;
+	if (!root) return;
+	(*parent_child) = root;
 	int index = get_index(words, root);
-	printf("node with key: %s, has index %d\n", root->key, index);
+	if (root->key)
 
-	make_tree_recursive(C, words, 0, index - 1, vector_get(words, index));
-	make_tree_recursive(C, words, index, words->total, vector_get(words, index));
-}
-
-node* make_tree_recursive(cell** C, vector* words, int left_bound, int right_bound, node* parent) {
-	if (left_bound == right_bound) {
-		return;
-	}
-
-	int index = 0;
-	parent->children[0] = C[left_bound][right_bound].root;
+	make_tree_recursive(C, words, left_bound, index - 1, parent_child);
+	make_tree_recursive(C, words, index, right_bound, parent_child);
 }
 
 void print_table(cell** table) {
@@ -159,6 +157,7 @@ void fill_zeroes(cell** table) {
 	for (int i = 0; i < 600; i++) {
 		for (int j = 0; j < 600; j++) {
 			table[i][j].probability = 0;
+			table[i][j].root = NULL;
 		}
 	}
 }
@@ -235,7 +234,13 @@ int main() {
 
 	printf("average number of comparisons: %lf\n", C[0][600].probability);
 
-	make_tree(C, words);
+	node* root = C[0][600].root;
+	int index = get_index(words, root);
+	printf("node with key: %s, has index %d\n", root->key, index);
+
+	make_tree_recursive(C, words, 0, index - 1, &root->children[0]);
+	make_tree_recursive(C, words, index, words->total, &root->children[1]);
+	printf("DONE MAKING TREE!\n");
 
 	printf("END\n");
 	return 1;
