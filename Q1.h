@@ -17,13 +17,8 @@ struct node {
 
 typedef struct {
 	double probability;
-	node* root;
+	int root_index;
 } cell;
-
-typedef struct {
-	int min_index;
-	int minimum;
-} min;
 
 /* printing tools */
 void print_table(cell** table);
@@ -37,7 +32,7 @@ void make_tree_recursive(cell** C, vector* words, int left_bound, int right_boun
 int get_index(vector* words, node* to_find);
 
 /* algorithm */
-min minimum_cost(cell** C, int i, int j);
+int minimum_cost(cell** C, int i, int j);
 double weight(vector* v, int i, int j);
 
 /* setup */

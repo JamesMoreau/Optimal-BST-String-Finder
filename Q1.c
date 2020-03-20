@@ -100,7 +100,7 @@ void make_tree_recursive(cell** C, vector* words, int left_bound, int right_boun
 		left_bound < 0 ||
 		right_bound > words->total) return;
 
-	node* root = C[left_bound][right_bound].root;
+	node* root = vector_get(words, C[left_bound][right_bound].root_index);
 	if (!root) return;
 	(*parent_child) = root;
 	int index = get_index(words, root);
@@ -157,7 +157,7 @@ void fill_zeroes(cell** table) {
 	for (int i = 0; i < 600; i++) {
 		for (int j = 0; j < 600; j++) {
 			table[i][j].probability = 0;
-			table[i][j].root = NULL;
+			table[i][j].root_index = -1;
 		}
 	}
 }
@@ -172,7 +172,7 @@ double weight(vector* v, int i, int j) {
 	return (sum);
 }
 
-min minimum_cost(cell** C, int i, int j) {
+int minimum_cost(cell** C, int i, int j) {
 	double minimum = INT_MAX;
 	int min_root_index = -1;
 	// printf("i: %d, j: %d\n", i, j);
@@ -186,11 +186,8 @@ min minimum_cost(cell** C, int i, int j) {
 		}
 	}
 
-	min minimum_struct;
-	minimum_struct.min_index = min_root_index;
-	minimum_struct.minimum = minimum;
-
-	return minimum_struct;
+	C[i][j].root_index = min_root_index; // save the index of minimum cost root
+	return minimum;
 }
 
 int compare_keys(const void* a, const void* b) {
@@ -221,9 +218,8 @@ int main() {
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
 			
-			min min_struct = minimum_cost(C, i, j); 
-			C[i][j].probability = min_struct.minimum + weight(words, i, j);
-			C[i][j].root = vector_get(words, min_struct.min_index);
+			C[i][j].probability = minimum_cost(C, i, j) + weight(words, i, j);
+			// C[i][j].root_index = min_struct.min_index;
 
 			// printf("C[%d][%d].root: %s\n", i, j, C[i][j].root->key); //useful
 			// printf("i: %d, j: %d, k: %d\n", i, j, k);
@@ -234,7 +230,9 @@ int main() {
 
 	printf("average number of comparisons: %lf\n", C[0][600].probability);
 
-	node* root = C[0][600].root;
+	return 0;
+
+	node* root = vector_get(words, C[0][600].root_index);
 	int index = get_index(words, root);
 	printf("node with key: %s, has index %d\n", root->key, index);
 
