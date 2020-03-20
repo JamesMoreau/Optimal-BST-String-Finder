@@ -82,19 +82,7 @@ node* node_constructor(char* key, double probability) {
 	return new_node;
 }
 
-int get_index(vector* words, node* to_find) {
-	for (int i = 0; i < words->total; i++) {
-		node* word_to_compare = vector_get(words, i);
-		if (strcmp(to_find->key, word_to_compare->key) == 0) {
-			return (i);
-		}
-	}
-
-	printf("INDEX NOT FOUND: SHOULD NOT HAPPEN");
-	exit(EXIT_FAILURE);
-}
-
-void make_tree_recursive(cell** C, vector* words, int left_bound, int right_bound, node** parent_child) {
+void make_tree(cell** C, vector* words, int left_bound, int right_bound, node** parent_child) {
 	printf("recursion!\n");
 	if (left_bound > right_bound ||
 		left_bound < 0 ||
@@ -103,11 +91,9 @@ void make_tree_recursive(cell** C, vector* words, int left_bound, int right_boun
 	node* root = vector_get(words, C[left_bound][right_bound].root_index);
 	if (!root) return;
 	(*parent_child) = root;
-	int index = get_index(words, root);
-	if (root->key)
 
-	make_tree_recursive(C, words, left_bound, index - 1, parent_child);
-	make_tree_recursive(C, words, index, right_bound, parent_child);
+	// make_tree(C, words, left_bound, index - 1, parent_child);
+	// make_tree(C, words, index, right_bound, parent_child);
 }
 
 void print_table(cell** table) {
@@ -186,7 +172,7 @@ int minimum_cost(cell** C, int i, int j) {
 		}
 	}
 
-	C[i][j].root_index = min_root_index; // save the index of minimum cost root
+	C[i][j].root_index = min_root_index; // save the index of minimum costroot
 	return minimum;
 }
 
@@ -217,28 +203,19 @@ int main() {
 	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
-			
 			C[i][j].probability = minimum_cost(C, i, j) + weight(words, i, j);
-			// C[i][j].root_index = min_struct.min_index;
-
-			// printf("C[%d][%d].root: %s\n", i, j, C[i][j].root->key); //useful
-			// printf("i: %d, j: %d, k: %d\n", i, j, k);
-			// printf("min_root_index: %d\n", min_struct.min_index);
-			// printf("here\n");
+			node* temp = vector_get(words, C[i][j].root_index);
+			// printf("C[%d][%d].root: %s\n", i, j, temp->key); //useful
 		}
 	}
 
 	printf("average number of comparisons: %lf\n", C[0][600].probability);
 
-	return 0;
-
+	/* Making tree */
 	node* root = vector_get(words, C[0][600].root_index);
-	int index = get_index(words, root);
-	printf("node with key: %s, has index %d\n", root->key, index);
-
-	make_tree_recursive(C, words, 0, index - 1, &root->children[0]);
-	make_tree_recursive(C, words, index, words->total, &root->children[1]);
-	printf("DONE MAKING TREE!\n");
+	printf("node with key: %s, has index %d\n", root->key, C[0][600].root_index);
+	// make_tree(C, words, 0, C[0][600].root_index - 1, &root->children[0]);
+	// make_tree(C, words, C[0][600].root_index, words->total, &root->children[1]);
 
 	printf("END\n");
 	return 1;

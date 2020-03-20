@@ -28,8 +28,7 @@ void print_minimums(cell** table);
 
 /* tree stuff */
 node* node_constructor(char* key, double probability);
-void make_tree_recursive(cell** C, vector* words, int left_bound, int right_bound, node** parent_child);
-int get_index(vector* words, node* to_find);
+void make_tree(cell** C, vector* words, int left_bound, int right_bound, node** parent_child);
 
 /* algorithm */
 int minimum_cost(cell** C, int i, int j);
