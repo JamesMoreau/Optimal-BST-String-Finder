@@ -92,8 +92,8 @@ void make_tree(cell** C, vector* words, int left_bound, int right_bound, node** 
 	if (!root) return;
 	(*parent_child) = root;
 
-	// make_tree(C, words, left_bound, index - 1, parent_child);
-	// make_tree(C, words, index, right_bound, parent_child);
+	make_tree(C, words, left_bound, C[left_bound][right_bound].root_index - 1, parent_child);
+	make_tree(C, words, C[left_bound][right_bound].root_index, right_bound, parent_child);
 }
 
 void print_table(cell** table) {
@@ -186,12 +186,6 @@ int main() {
 	vector* words = read_file("data_7.txt");
 	qsort(words->items, words->total, sizeof(node*), compare_keys);
 
-	printf("number of words: %d\n", words->total);
-	for (int i = 0; i < words->total; i++) {
-		node* node = vector_get(words, i);
-		// printf("word: [%s], count: %lf\n", node->key, node->probability);
-	} //print tool
-
 	/* initialize the table */
 	cell** C = calloc(TABLE_COLUMNS, sizeof(cell*));
 	for (int i = 0; i < TABLE_COLUMNS; i++) {
@@ -208,18 +202,24 @@ int main() {
 			// printf("C[%d][%d].root: %s\n", i, j, temp->key); //useful
 		}
 	}
-
 	printf("average number of comparisons: %lf\n", C[0][600].probability);
 
 	/* Making tree */
 	node* root = vector_get(words, C[0][600].root_index);
 	printf("node with key: %s, has index %d\n", root->key, C[0][600].root_index);
-	// make_tree(C, words, 0, C[0][600].root_index - 1, &root->children[0]);
-	// make_tree(C, words, C[0][600].root_index, words->total, &root->children[1]);
+	make_tree(C, words, 0, C[0][600].root_index - 1, &root->children[0]);
+	make_tree(C, words, C[0][600].root_index, words->total, &root->children[1]);
 
 	printf("END\n");
 	return 1;
 }
+
+/* printf("number of words: %d\n", words->total);
+	for (int i = 0; i < words->total; i++) {
+		node* node = vector_get(words, i);
+		printf("word: [%s], count: %lf\n", node->key, node->probability);
+	} //print tool */
+
 /* void insert_node(node** current, node* new_node) {
 	if (*current) {
 		//node already exists
