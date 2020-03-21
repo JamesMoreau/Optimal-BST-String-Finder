@@ -83,17 +83,20 @@ node* node_constructor(char* key, double probability) {
 }
 
 void make_tree(cell** C, vector* words, int left_bound, int right_bound, node** parent_child) {
-	printf("recursion!\n");
-	if (left_bound > right_bound ||
-		left_bound < 0 ||
-		right_bound > words->total) return;
+	if (left_bound < 0 || right_bound < 0 || right_bound > words->total) return;
 
-	node* root = vector_get(words, C[left_bound][right_bound].root_index);
-	if (!root) return;
-	(*parent_child) = root;
+	printf("recursion.\n");
 
-	make_tree(C, words, left_bound, C[left_bound][right_bound].root_index - 1, parent_child);
-	make_tree(C, words, C[left_bound][right_bound].root_index, right_bound, parent_child);
+	int root_index = C[left_bound][right_bound].root_index;
+	node* sub_root = vector_get(words, root_index);
+	(*parent_child) = sub_root;
+
+	if (!sub_root) {
+		exit(EXIT_FAILURE);
+	}
+
+	make_tree(C, words, left_bound, root_index - 1, &(sub_root->children[0]));
+	make_tree(C, words, root_index, right_bound, &(sub_root->children[1]));
 }
 
 void print_table(cell** table) {
