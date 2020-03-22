@@ -164,7 +164,7 @@ double weight(vector* v, int i, int j) {
 int minimum_cost(cell** C, int i, int j) {
 	double minimum = INT_MAX;
 	int min_root_index = -1;
-	// printf("i: %d, j: %d\n", i, j);
+
 	for (int k = i + 1; k <= j; k++) {
 		// printf("C[i][k-1] = %d, i = %d, k = %d, j = %d\n", C[i][k - 1].value, i, k, j);
 		// printf("C[k][j] = %d, i = %d, k = %d, j = %d\n", C[k][j].value, i , k, j);
@@ -189,6 +189,12 @@ int main() {
 	vector* words = read_file("data_7.txt");
 	qsort(words->items, words->total, sizeof(node*), compare_keys);
 
+	printf("number of words: %d\n", words->total);
+	for (int i = 0; i < words->total; i++) {
+		node* node = vector_get(words, i);
+		printf("word: [%s], probability: %lf\n", node->key, node->probability);
+	} return 0; //print tool
+
 	/* initialize the table */
 	cell** C = calloc(TABLE_COLUMNS, sizeof(cell*));
 	for (int i = 0; i < TABLE_COLUMNS; i++) {
@@ -210,18 +216,12 @@ int main() {
 	/* Making tree */
 	node* root = vector_get(words, C[0][600].root_index);
 	printf("node with key: %s, has index %d\n", root->key, C[0][600].root_index);
-	make_tree(C, words, 0, C[0][600].root_index - 1, &root->children[0]);
-	make_tree(C, words, C[0][600].root_index, words->total, &root->children[1]);
+	// make_tree(C, words, 0, C[0][600].root_index - 1, &root->children[0]);
+	// make_tree(C, words, C[0][600].root_index, words->total, &root->children[1]);
 
 	printf("END\n");
 	return 1;
 }
-
-/* printf("number of words: %d\n", words->total);
-	for (int i = 0; i < words->total; i++) {
-		node* node = vector_get(words, i);
-		printf("word: [%s], probability: %lf\n", node->key, node->probability);
-	} //print tool */
 
 /* void insert_node(node** current, node* new_node) {
 	if (*current) {
