@@ -220,7 +220,7 @@ int main() {
 /* printf("number of words: %d\n", words->total);
 	for (int i = 0; i < words->total; i++) {
 		node* node = vector_get(words, i);
-		printf("word: [%s], count: %lf\n", node->key, node->probability);
+		printf("word: [%s], probability: %lf\n", node->key, node->probability);
 	} //print tool */
 
 /* void insert_node(node** current, node* new_node) {
