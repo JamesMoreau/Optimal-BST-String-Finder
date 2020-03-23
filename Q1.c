@@ -94,8 +94,8 @@ void make_tree(cell** C, vector* words, int left_bound, int right_bound, node** 
 		exit(EXIT_FAILURE);
 	}
 
-	make_tree(C, words, left_bound, root_index - 1, &(sub_root->children[0]));
-	make_tree(C, words, root_index, right_bound, &(sub_root->children[1]));
+	make_tree(C, words, left_bound, root_index - 1, &(sub_root->children[0])); //left tree
+	make_tree(C, words, root_index, right_bound, &(sub_root->children[1])); //right tree
 }
 
 void print_table(cell** table) {
@@ -140,7 +140,7 @@ int minimum_cost(cell** C, int i, int j) {
 		}
 	}
 
-	C[i][j].root_index = min_root_index; // save the index of minimum costroot
+	C[i][j].root_index = min_root_index; // save the index of minimum cost root
 	return minimum;
 }
 

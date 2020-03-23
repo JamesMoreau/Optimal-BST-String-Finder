@@ -31,6 +31,7 @@ double weight(vector* v, int i, int j);
 vector* read_file(char* filename);
 int num_occurences(vector*, char*);
 void fill_zeroes(cell** table);
+int compare_keys(const void* a, const void* b);
 char *strdup(const char *c);
 
 #endif
