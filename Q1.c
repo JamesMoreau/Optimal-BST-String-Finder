@@ -69,7 +69,6 @@ int num_occurences(vector* all_words, char* word) {
 
 node* node_constructor(char* key, double probability) {
 	node* new_node = malloc(sizeof(node));
-	if (!new_node) exit(EXIT_FAILURE);
 	
 	new_node->key = malloc(sizeof(char) * (strlen(key) + 1));
 	strcpy(new_node->key, key);
@@ -109,39 +108,6 @@ void print_table(cell** table) {
 	}
 }
 
-void print_diagonals(cell** table) {
-	printf("____________DIAGONALS____________\n");
-	for (int k = 2; k <= TABLE_ROWS; k++) {
-		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
-			int j = i + k - 1;
-			printf ("%.2lf\t", table[i][j].probability);
-		}
-		printf("\n");
-	}
-}
-
-void print_weights(cell** table, vector* data) {
-	printf("_____________WEIGHTS_____________\n");
-	for (int k = 2; k <= TABLE_ROWS; k++) {
-		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
-			int j = i + k - 1;
-			printf("W: %d\t", weight(data, i, j));
-		}
-		printf("\n");
-	}
-}
-
-void print_minimums(cell** table) {
-	printf("___________MINIMUMS___________\n");
-	for (int k = 2; k <= TABLE_ROWS; k++) {
-		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
-			int j = i + k - 1;
-			printf("M: %d\t", minimum_cost(table, i, j));
-		}
-		printf("\n");
-	}
-}
-
 void fill_zeroes(cell** table) {
 	for (int i = 0; i < 600; i++) {
 		for (int j = 0; j < 600; j++) {
@@ -166,8 +132,7 @@ int minimum_cost(cell** C, int i, int j) {
 	int min_root_index = -1;
 
 	for (int k = i + 1; k <= j; k++) {
-		// printf("C[i][k-1] = %d, i = %d, k = %d, j = %d\n", C[i][k - 1].value, i, k, j);
-		// printf("C[k][j] = %d, i = %d, k = %d, j = %d\n", C[k][j].value, i , k, j);
+		// printf("C[%d][%d] = %d, C[%d][%d] = %d\n", i, k - 1, C[i][k - 1].probability, k, j, C[k][j].probability);
 		double cost = C[i][k - 1].probability + C[k][j].probability;
 		if (cost < minimum) {
 			minimum = cost;
@@ -187,13 +152,7 @@ int compare_keys(const void* a, const void* b) {
 
 int main() {
 	vector* words = read_file("data_7.txt");
-	qsort(words->items, words->total, sizeof(node*), compare_keys);
-
-	printf("number of words: %d\n", words->total);
-	for (int i = 0; i < words->total; i++) {
-		node* node = vector_get(words, i);
-		printf("word: [%s], probability: %lf\n", node->key, node->probability);
-	} return 0; //print tool
+	// qsort(words->items, words->total, sizeof(node*), compare_keys); //?do we have to sort?
 
 	/* initialize the table */
 	cell** C = calloc(TABLE_COLUMNS, sizeof(cell*));
@@ -202,28 +161,34 @@ int main() {
 	}
 	fill_zeroes(C);
 
-	//making table
+	/* making the table */
 	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
 			C[i][j].probability = minimum_cost(C, i, j) + weight(words, i, j);
-			node* temp = vector_get(words, C[i][j].root_index);
-			// printf("C[%d][%d].root: %s\n", i, j, temp->key); //useful
+			// printf("C[%d][%d].root: %s\n", i, j, ((node*)vector_get(words, C[i][j].root_index))->key); //useful
 		}
 	}
 	printf("average number of comparisons: %lf\n", C[0][600].probability);
 
 	/* Making tree */
 	node* root = vector_get(words, C[0][600].root_index);
-	printf("node with key: %s, has index %d\n", root->key, C[0][600].root_index);
-	// make_tree(C, words, 0, C[0][600].root_index - 1, &root->children[0]);
-	// make_tree(C, words, C[0][600].root_index, words->total, &root->children[1]);
+	printf("node with key: [%s], has index %d\n", root->key, C[0][600].root_index);
+
+	make_tree(C, words, 0, C[0][600].root_index - 1, &root->children[0]);
+	make_tree(C, words, C[0][600].root_index, words->total, &root->children[1]);
 
 	printf("END\n");
 	return 1;
 }
 
-/* void insert_node(node** current, node* new_node) {
+/* printf("number of words: %d\n", words->total);
+	for (int i = 0; i < words->total; i++) {
+		node* node = vector_get(words, i);
+		printf("word: [%s], probability: %lf\n", node->key, node->probability);
+	} return 0; //print tool */
+
+/* void insert_node(node** current, node* new_node) { //!could use this logic for find_word
 	if (*current) {
 		//node already exists
 		if (strcmp((*current)->key, new_node->key) < 0) {
@@ -236,37 +201,3 @@ int main() {
 		(*current) = new_node;
 	}
 } */
-	
-	/* vector test_data;
-	vector_init(&test_data);
-
-	node data1;
-	data1.key = "A";
-	data1.frequency = 1;
-	vector_add(&test_data, &data1);
-	
-	node data2;
-	data2.key = "B";
-	data2.frequency = 2;
-	vector_add(&test_data, &data2);
-
-	node data3;
-	data3.key = "C";
-	data3.frequency = 4;
-	vector_add(&test_data, &data3);
-
-	node data4;
-	data4.key = "D";
-	data4.frequency = 3;
-	vector_add(&test_data, &data4);
-	
-	cell test_table[TABLE_ROWS][TABLE_COLUMNS];
-	fill_zeroes(test_table);
-
-	print_table(test_table);
-	print_diagonals(test_table);
-	print_weights(test_table, &test_data);
-	// print_minimums(test_table);
-
-	print_table(test_table);
-	vector_free(&test_data); */

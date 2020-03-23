@@ -1,4 +1,3 @@
-#include <stdbool.h>
 #include "vector.h"
 
 #ifndef __Q1__
@@ -19,12 +18,6 @@ typedef struct {
 	double probability;
 	int root_index;
 } cell;
-
-/* printing tools */
-void print_table(cell** table);
-void print_diagonals(cell** table);
-void print_weights(cell** table, vector* test_data);
-void print_minimums(cell** table);
 
 /* tree stuff */
 node* node_constructor(char* key, double probability);
