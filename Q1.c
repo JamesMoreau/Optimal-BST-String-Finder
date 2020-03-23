@@ -181,23 +181,3 @@ int main() {
 	printf("END\n");
 	return 1;
 }
-
-/* printf("number of words: %d\n", words->total);
-	for (int i = 0; i < words->total; i++) {
-		node* node = vector_get(words, i);
-		printf("word: [%s], probability: %lf\n", node->key, node->probability);
-	} return 0; //print tool */
-
-/* void insert_node(node** current, node* new_node) { //!could use this logic for find_word
-	if (*current) {
-		//node already exists
-		if (strcmp((*current)->key, new_node->key) < 0) {
-			insert_node(&((*current)->children[0]), new_node);
-		} else {
-			insert_node(&((*current)->children[1]), new_node);
-		}
-	} else {
-		//put node at current
-		(*current) = new_node;
-	}
-} */

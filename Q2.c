@@ -111,9 +111,10 @@ int main() {
 	vector* words = read_file("data_7.txt");
 	qsort(words->items, words->total, sizeof(node*), compare_keys);
 
+	/* making tree */
 	int highest_probability_index = find_largest_probability(words, 0, words->total);
 	node* root = vector_get(words, highest_probability_index);
-
+	
 	printf("word: [%s], at index [%d]\n", root->key, highest_probability_index);
 	make_tree(words, 0, highest_probability_index - 1, &(root->children[0]));
 	make_tree(words, highest_probability_index, words->total, &(root->children[1]));
