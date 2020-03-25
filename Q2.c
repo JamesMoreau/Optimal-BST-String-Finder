@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "binary_search_tree.h"
 #include "Q2.h"
 #include "vector.h"
 #include "set.h"
@@ -40,7 +41,7 @@ vector* read_file(char* filename) {
 
 	for (int i = 0; i < num_words; i++) {
 		char* word = arr[i];
-		double probability = ((double) num_occurences(all_words, word)) / num_words;
+		double probability = ((double) num_occurences(all_words, word)) / all_words->total;
 		
 		vector_add(probability_table, node_constructor(word, probability));
 	}
@@ -60,65 +61,46 @@ int num_occurences(vector* all_words, char* word) {
 	return (count);
 }
 
-node* node_constructor(char* key, double probability) {
-	node* new_node = malloc(sizeof(node));
-	
-	new_node->key = malloc(sizeof(char) * (strlen(key) + 1));
-	strcpy(new_node->key, key);
-
-	new_node->probability = probability;
-	
-	new_node->children[0] = NULL;
-	new_node->children[1] = NULL;
-
-	return new_node;
-}
-
-int compare_keys(const void* a, const void* b) {
+int compare_probabilities(const void* a, const void* b) {
 	node* first = *(node**)a;
 	node* second = *(node**)b;
-	return (strcmp((char*)(*first).key, (char*)(*second).key));
-}
+	// printf("first prob: %lf\n", first->probability);
+	// printf("second prob: %lf\n", second->probability);
+	
 
-int find_largest_probability(vector* words, int left_bound, int right_bound) {
-	if (left_bound < 0 || left_bound >= right_bound || right_bound > words->total) exit(EXIT_FAILURE);
-
-	int max_index = left_bound;
-	for (int i = left_bound + 1; i < right_bound; i++) {
-		if (((node*)vector_get(words, i))->probability > ((node*)vector_get(words, max_index))->probability) {
-			max_index = i;
-		}
+	if (first->probability > second->probability) {
+		return -1;
+	} else if (first->probability < second->probability) {
+		return 1;
+	} else {
+		return 0;
 	}
-
-	return max_index;
-}
-
-void make_tree(vector* words, int left_bound, int right_bound, node** parent_child) {
-	if (left_bound < 0 || right_bound < 0 || right_bound > words->total) return;
-
-	printf("recursion\n");
-
-	int highest_probability_index = find_largest_probability(words, left_bound, right_bound);
-	node* word = vector_get(words, highest_probability_index);
-
-	(*parent_child) = word;
-
-	make_tree(words, left_bound, highest_probability_index - 1, &(word->children[0]));
-	make_tree(words, highest_probability_index, right_bound, &(word->children[1]));
 }
 
 int main() {
 	vector* words = read_file("data_7.txt");
-	qsort(words->items, words->total, sizeof(node*), compare_keys);
+	qsort(words->items, words->total, sizeof(node*), compare_probabilities);
 
-	/* making tree */
-	int highest_probability_index = find_largest_probability(words, 0, words->total);
-	node* root = vector_get(words, highest_probability_index);
-	
-	printf("word: [%s], at index [%d]\n", root->key, highest_probability_index);
-	make_tree(words, 0, highest_probability_index - 1, &(root->children[0]));
-	make_tree(words, highest_probability_index, words->total, &(root->children[1]));
+	node* root = NULL;
 
-	printf("DONE\n");
+	node* to_add;
+	for (int i = 0; i < words->total; i++) {
+		to_add = vector_get(words, i);
+		// printf("key: [%s]\n", to_add->key);
+		add_node(to_add, &root);
+	}
+
+	char user_input[1000]; user_input[0] = '\0';
+
+	printf("Enter a key: ");
+	scanf("%s", user_input);
+
+	node* to_find = find_node(root, user_input);
+
+	if (!to_find) {
+		printf("Not found.\n");
+	}
+
+	delete_tree(root);
 	return 0;
 }

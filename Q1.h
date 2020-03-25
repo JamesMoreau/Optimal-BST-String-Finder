@@ -6,21 +6,12 @@
 #define TABLE_ROWS 601
 #define TABLE_COLUMNS 601
 
-typedef struct node node;
-
-struct node {
-	char* key;
-	double probability;
-	node* children[2];
-};
-
 typedef struct {
 	double probability;
 	int root_index;
 } cell;
 
 /* tree stuff */
-node* node_constructor(char* key, double probability);
 void make_tree(cell** C, vector* words, int left_bound, int right_bound, node** parent_child);
 
 /* algorithm */

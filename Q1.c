@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <limits.h>
 #include "vector.h"
+#include "binary_search_tree.h"
 #include "set.h"
 #include "Q1.h"
 
@@ -65,20 +66,6 @@ int num_occurences(vector* all_words, char* word) {
     }
 
 	return (count);
-}
-
-node* node_constructor(char* key, double probability) {
-	node* new_node = malloc(sizeof(node));
-	
-	new_node->key = malloc(sizeof(char) * (strlen(key) + 1));
-	strcpy(new_node->key, key);
-
-	new_node->probability = probability;
-	
-	new_node->children[0] = NULL;
-	new_node->children[1] = NULL;
-
-	return new_node;
 }
 
 void make_tree(cell** C, vector* words, int left_bound, int right_bound, node** parent_child) {
@@ -152,7 +139,7 @@ int compare_keys(const void* a, const void* b) {
 
 int main() {
 	vector* words = read_file("data_7.txt");
-	// qsort(words->items, words->total, sizeof(node*), compare_keys); //?do we have to sort?
+	qsort(words->items, words->total, sizeof(node*), compare_keys); //?do we have to sort?
 
 	/* initialize the table */
 	cell** C = calloc(TABLE_COLUMNS, sizeof(cell*));
@@ -175,9 +162,16 @@ int main() {
 	node* root = vector_get(words, C[0][600].root_index);
 	printf("node with key: [%s], has index %d\n", root->key, C[0][600].root_index);
 
+	return 0;
+
 	make_tree(C, words, 0, C[0][600].root_index - 1, &root->children[0]);
 	make_tree(C, words, C[0][600].root_index, words->total, &root->children[1]);
 
 	printf("END\n");
 	return 1;
 }
+
+/* for (int i = 0; i < words->total; i++) {
+		node* my_node = vector_get(words, i);
+		printf("key: [%s], probability: [%lf]\n", my_node->key, my_node->probability);
+	} */
