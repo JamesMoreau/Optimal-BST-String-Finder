@@ -43,7 +43,7 @@ vector* read_file(char* filename) {
 
 	for (int i = 0; i < num_words; i++) {
 		char* word = arr[i];
-		double probability = ((double) num_occurences(all_words, word)) / num_words;
+		double probability = ((double) num_occurences(all_words, word)) / all_words->total;
 		
 		vector_add(probability_table, node_constructor(word, probability));
 	}

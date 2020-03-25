@@ -64,9 +64,6 @@ int num_occurences(vector* all_words, char* word) {
 int compare_probabilities(const void* a, const void* b) {
 	node* first = *(node**)a;
 	node* second = *(node**)b;
-	// printf("first prob: %lf\n", first->probability);
-	// printf("second prob: %lf\n", second->probability);
-	
 
 	if (first->probability > second->probability) {
 		return -1;
