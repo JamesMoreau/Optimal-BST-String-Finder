@@ -46,6 +46,23 @@ vector* read_file(char* filename) {
 		vector_add(probability_table, node_constructor(word, probability));
 	}
 
+	/* cleanup */
+	for (int i = 0; i < num_words; i++) {
+		free(arr[i]);
+	}
+	free (arr);
+	
+	set_destroy(unique_words);
+	free(unique_words);
+
+	for (int i = 0; i < all_words->total; i++) {
+		free(vector_get(all_words, i));
+	}
+	vector_free(all_words);
+	free(all_words);
+
+	fclose(f);
+
 	return probability_table;
 }
 
@@ -80,9 +97,8 @@ int main() {
 
 	node* root = NULL;
 
-	node* to_add;
 	for (int i = 0; i < words->total; i++) {
-		to_add = vector_get(words, i);
+		node* to_add = vector_get(words, i);
 		// printf("key: [%s]\n", to_add->key);
 		add_node(to_add, &root);
 	}
@@ -98,6 +114,13 @@ int main() {
 		printf("Not found.\n");
 	}
 
-	delete_tree(root);
+	for (int i = 0; i < words->total; i++) {
+		node* to_delete = vector_get(words, i);
+		free(to_delete->key);
+		free(to_delete);
+	}
+	vector_free(words);
+	free(words);
+
 	return 0;
 }
