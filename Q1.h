@@ -8,7 +8,7 @@
 #define TABLE_COLUMNS 601
 
 typedef struct {
-	double probability;
+	double weight;
 	int root_index;
 } cell;
 

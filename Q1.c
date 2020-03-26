@@ -47,6 +47,23 @@ vector* read_file(char* filename) {
 		vector_add(probability_table, node_constructor(word, probability));
 	}
 
+	/* cleanup */
+	for (int i = 0; i < num_words; i++) {
+		free(arr[i]);
+	}
+	free (arr);
+	
+	set_destroy(unique_words);
+	free(unique_words);
+
+	for (int i = 0; i < all_words->total; i++) {
+		free(vector_get(all_words, i));
+	}
+	vector_free(all_words);
+	free(all_words);
+
+	fclose(f);
+
 	return probability_table;
 }
 
@@ -71,7 +88,7 @@ void print_probabilities(cell** table) {
 	printf("______________TABLE______________\n");
 	for (int i = 0; i < TABLE_ROWS; i++) {
 		for (int j = 0; j < TABLE_COLUMNS; j++) {
-			printf ("%.1lf\t", table[i][j].probability);
+			printf ("%.1lf\t", table[i][j].weight);
 		}
 		printf("\n");
 	}
@@ -90,7 +107,7 @@ void print_roots(cell** table) {
 void fill_zeroes(cell** table) {
 	for (int i = 0; i < TABLE_ROWS; i++) {
 		for (int j = 0; j < TABLE_COLUMNS; j++) {
-			table[i][j].probability = 0;
+			table[i][j].weight = 0;
 			table[i][j].root_index = -1;
 		}
 	}
@@ -112,7 +129,7 @@ double minimum_cost(cell** C, int i, int j) {
 
 	for (int k = i + 1; k <= j; k++) {
 		// printf("C[%d][%d] = %d, C[%d][%d] = %d\n", i, k - 1, C[i][k - 1].probability, k, j, C[k][j].probability);
-		double cost = C[i][k - 1].probability + C[k][j].probability;
+		double cost = C[i][k - 1].weight + C[k][j].weight;
 		if (cost < minimum) {
 			minimum = cost;
 			min_root_index = k - 1;
@@ -136,7 +153,7 @@ void make_tree(cell** C, vector* words, int left_bound, int right_bound, node** 
     if (sub_root_index < 0) return;
 	node* sub_root = vector_get(words, sub_root_index);
 	(*parent_child) = sub_root;
-    sub_root->probability = C[left_bound][right_bound].probability;
+    sub_root->probability = C[left_bound][right_bound].weight;
 
 	make_tree(C, words, left_bound, sub_root_index, &(sub_root->children[0])); //left tree
 	make_tree(C, words, sub_root_index + 1, right_bound, &(sub_root->children[1])); //right tree
@@ -156,16 +173,13 @@ int main() {
 	for (int k = 2; k <= TABLE_ROWS; k++) { // fill the table
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
-			C[i][j].probability = minimum_cost(C, i, j) + weight(words, i, j);
+			C[i][j].weight = minimum_cost(C, i, j) + weight(words, i, j);
 		}
 	}
 
-	/* print_probabilities(C);
-	print_roots(C); */
-
 	int root_index = C[0][TABLE_COLUMNS - 1].root_index;
 	node* root = vector_get(words, root_index); //upper right cell
-	root->probability = C[0][TABLE_COLUMNS - 1].probability;
+	root->probability = C[0][TABLE_COLUMNS - 1].weight;
 
 	make_tree(C, words, 0, root_index, &(root->children[0])); // make left children
 	make_tree(C, words, root_index + 1, words->total, &(root->children[1])); // make right children
@@ -181,6 +195,19 @@ int main() {
 		printf("Not found.\n");
 	}
 
+	for (int i = 0; i < words->total; i++) {
+		node* to_delete = vector_get(words, i);
+		free(to_delete->key);
+		free(to_delete);
+	}
+	vector_free(words);
+	free(words);
+
+	for (int i = 0; i < TABLE_ROWS; i++) {
+		free(C[i]);
+	}
+	free(C);
+
 	return 1;
 }
 	/* printf("root");
@@ -188,7 +215,3 @@ int main() {
 	printf("right child node: [%s], probability: [%lf]\n", root->children[1]->key, root->children[1]->probability); */
 
 
-/* for (int i = 0; i < words->total; i++) {
-		node* my_node = vector_get(words, i);
-		printf("key: [%s], probability: [%lf]\n", my_node->key, my_node->probability);
-	} */
