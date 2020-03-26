@@ -128,7 +128,6 @@ double minimum_cost(cell** C, int i, int j) {
 	int min_root_index = -1;
 
 	for (int k = i + 1; k <= j; k++) {
-		// printf("C[%d][%d] = %d, C[%d][%d] = %d\n", i, k - 1, C[i][k - 1].probability, k, j, C[k][j].probability);
 		double cost = C[i][k - 1].weight + C[k][j].weight;
 		if (cost < minimum) {
 			minimum = cost;
