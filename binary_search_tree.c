@@ -103,8 +103,10 @@ void make_tree(cell** C, vector* words, int left_bound, int right_bound, node** 
 	printf("recursion.\n");
 
 	int sub_root_index = C[left_bound][right_bound].root_index;
+    if (sub_root_index < 0) return;
 	node* sub_root = vector_get(words, sub_root_index);
 	(*parent_child) = sub_root;
 
 	make_tree(C, words, left_bound, sub_root_index, &(sub_root->children[0])); //left tree
+	make_tree(C, words, sub_root_index + 1, right_bound, &(sub_root->children[1])); //right tree
 }

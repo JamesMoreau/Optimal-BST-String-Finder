@@ -159,17 +159,19 @@ int main() {
 	node* root = vector_get(test_data, root_index); //upper right cell
 	printf("root node: [%s], probability: [%lf]\n", root->key, root->probability);
 
-	node* left_child = vector_get(test_data, C[0][root_index].root_index);
-	printf("left child node: [%s], probability: [%lf]\n", left_child->key, left_child->probability);
-
-	node* right_child = vector_get(test_data, C[root_index + 1][TABLE_COLUMNS - 1].root_index);
-	printf("right child node: [%s], probability: [%lf]\n", right_child->key, right_child->probability);
 
 	make_tree(C, test_data, 0, root_index, &(root->children[0])); // make left children
+	make_tree(C, test_data, root_index + 1, test_data->total, &(root->children[1])); // make right children
+
+	print_tree(root);
 
 	printf("END\n");
 	return 1;
 }
+	/* printf("root");
+	printf("left child node: [%s], probability: [%lf]\n", root->children[0]->key, root->children[0]->probability);
+	printf("right child node: [%s], probability: [%lf]\n", root->children[1]->key, root->children[1]->probability); */
+
 	// vector* words = read_file("data_7.txt");
 	// qsort(words->items, words->total, sizeof(node*), compare_keys); //?do we have to sort?
 
