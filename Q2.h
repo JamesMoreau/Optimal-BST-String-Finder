@@ -1,3 +1,9 @@
+/**
+ * @author James Moreau
+ * @id 1065510
+ * @E jmorea03@uoguelph.ca 
+ */
+
 #include "vector.h"
 #include "set.h"
 
