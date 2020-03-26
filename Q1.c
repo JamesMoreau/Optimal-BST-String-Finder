@@ -68,23 +68,6 @@ int num_occurences(vector* all_words, char* word) {
 	return (count);
 }
 
-void make_tree(cell** C, vector* words, int left_bound, int right_bound, node** parent_child) {
-	if (left_bound < 0 || right_bound < 0 || right_bound > words->total) return;
-
-	printf("recursion.\n");
-
-	int root_index = C[left_bound][right_bound].root_index;
-	node* sub_root = vector_get(words, root_index);
-	(*parent_child) = sub_root;
-
-	if (!sub_root) {
-		exit(EXIT_FAILURE);
-	}
-
-	make_tree(C, words, left_bound, root_index - 1, &(sub_root->children[0])); //left tree
-	make_tree(C, words, root_index, right_bound, &(sub_root->children[1])); //right tree
-}
-
 void print_probabilities(cell** table) {
 	printf("______________TABLE______________\n");
 	for (int i = 0; i < TABLE_ROWS; i++) {
@@ -172,6 +155,17 @@ int main() {
 	print_probabilities(C);
 	print_roots(C);
 
+	int root_index = C[0][TABLE_COLUMNS - 1].root_index;
+	node* root = vector_get(test_data, root_index); //upper right cell
+	printf("root node: [%s], probability: [%lf]\n", root->key, root->probability);
+
+	node* left_child = vector_get(test_data, C[0][root_index].root_index);
+	printf("left child node: [%s], probability: [%lf]\n", left_child->key, left_child->probability);
+
+	node* right_child = vector_get(test_data, C[root_index + 1][TABLE_COLUMNS - 1].root_index);
+	printf("right child node: [%s], probability: [%lf]\n", right_child->key, right_child->probability);
+
+	make_tree(C, test_data, 0, root_index, &(root->children[0])); // make left children
 
 	printf("END\n");
 	return 1;

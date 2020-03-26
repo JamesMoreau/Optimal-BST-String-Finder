@@ -1,5 +1,7 @@
 #include "binary_search_tree.h"
 #include <stdbool.h>
+#include "vector.h"
+#include "Q1.h"
 
 node* node_constructor(char* key, double probability) {
 	node* new_node = malloc(sizeof(node));
@@ -92,4 +94,17 @@ node* find_node(node* root, char* key) {
             return (current);
         }
     }
+}
+
+
+void make_tree(cell** C, vector* words, int left_bound, int right_bound, node** parent_child) {
+	if (left_bound < 0 || right_bound < 0 || right_bound > words->total) return;
+
+	printf("recursion.\n");
+
+	int sub_root_index = C[left_bound][right_bound].root_index;
+	node* sub_root = vector_get(words, sub_root_index);
+	(*parent_child) = sub_root;
+
+	make_tree(C, words, left_bound, sub_root_index, &(sub_root->children[0])); //left tree
 }
