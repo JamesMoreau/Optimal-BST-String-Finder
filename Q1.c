@@ -88,7 +88,7 @@ void print_probabilities(cell** table) {
 	printf("______________TABLE______________\n");
 	for (int i = 0; i < TABLE_ROWS; i++) {
 		for (int j = 0; j < TABLE_COLUMNS; j++) {
-			printf ("%.1lf\t", table[i][j].weight);
+			printf ("%.1lf\t", table[i][j].min_comparisons);
 		}
 		printf("\n");
 	}
@@ -107,7 +107,7 @@ void print_roots(cell** table) {
 void fill_zeroes(cell** table) {
 	for (int i = 0; i < TABLE_ROWS; i++) {
 		for (int j = 0; j < TABLE_COLUMNS; j++) {
-			table[i][j].weight = 0;
+			table[i][j].min_comparisons = 0;
 			table[i][j].root_index = -1;
 		}
 	}
@@ -128,7 +128,7 @@ double minimum_cost(cell** C, int i, int j) {
 	int min_root_index = -1;
 
 	for (int k = i + 1; k <= j; k++) {
-		double cost = C[i][k - 1].weight + C[k][j].weight;
+		double cost = C[i][k - 1].min_comparisons + C[k][j].min_comparisons;
 		if (cost < minimum) {
 			minimum = cost;
 			min_root_index = k - 1;
@@ -152,7 +152,7 @@ void make_tree(cell** C, vector* words, int left_bound, int right_bound, node** 
     if (sub_root_index < 0) return;
 	node* sub_root = vector_get(words, sub_root_index);
 	(*parent_child) = sub_root;
-    sub_root->probability = C[left_bound][right_bound].weight;
+    sub_root->probability = C[left_bound][right_bound].min_comparisons;
 
 	make_tree(C, words, left_bound, sub_root_index, &(sub_root->children[0])); //left tree
 	make_tree(C, words, sub_root_index + 1, right_bound, &(sub_root->children[1])); //right tree
@@ -172,13 +172,13 @@ int main() {
 	for (int k = 2; k <= TABLE_ROWS; k++) { // fill the table
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
-			C[i][j].weight = minimum_cost(C, i, j) + weight(words, i, j);
+			C[i][j].min_comparisons = minimum_cost(C, i, j) + weight(words, i, j);
 		}
 	}
 
 	int root_index = C[0][TABLE_COLUMNS - 1].root_index;
 	node* root = vector_get(words, root_index); //upper right cell
-	root->probability = C[0][TABLE_COLUMNS - 1].weight;
+	root->probability = C[0][TABLE_COLUMNS - 1].min_comparisons;
 
 	make_tree(C, words, 0, root_index, &(root->children[0])); // make left children
 	make_tree(C, words, root_index + 1, words->total, &(root->children[1])); // make right children

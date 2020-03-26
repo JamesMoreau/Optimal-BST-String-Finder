@@ -14,7 +14,7 @@
 #define TABLE_COLUMNS 601
 
 typedef struct {
-	double weight;
+	double min_comparisons;
 	int root_index;
 } cell;
 
