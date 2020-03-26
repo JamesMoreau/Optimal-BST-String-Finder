@@ -85,7 +85,7 @@ void make_tree(cell** C, vector* words, int left_bound, int right_bound, node** 
 	make_tree(C, words, root_index, right_bound, &(sub_root->children[1])); //right tree
 }
 
-void print_table(cell** table) {
+void print_probabilities(cell** table) {
 	printf("______________TABLE______________\n");
 	for (int i = 0; i < TABLE_ROWS; i++) {
 		for (int j = 0; j < TABLE_COLUMNS; j++) {
@@ -96,8 +96,8 @@ void print_table(cell** table) {
 }
 
 void fill_zeroes(cell** table) {
-	for (int i = 0; i < 600; i++) {
-		for (int j = 0; j < 600; j++) {
+	for (int i = 0; i < TABLE_ROWS; i++) {
+		for (int j = 0; j < TABLE_COLUMNS; j++) {
 			table[i][j].probability = 0;
 			table[i][j].root_index = -1;
 		}
@@ -114,7 +114,7 @@ double weight(vector* v, int i, int j) {
 	return (sum);
 }
 
-int minimum_cost(cell** C, int i, int j) {
+double minimum_cost(cell** C, int i, int j) {
 	double minimum = INT_MAX;
 	int min_root_index = -1;
 
@@ -138,18 +138,42 @@ int compare_keys(const void* a, const void* b) {
 }
 
 int main() {
-	vector* words = read_file("data_7.txt");
-	qsort(words->items, words->total, sizeof(node*), compare_keys); //?do we have to sort?
+	vector* test_data = malloc(sizeof(vector));
+	vector_init(test_data);
+	vector_add(test_data, node_constructor("A", 0.1));
+	vector_add(test_data, node_constructor("B", 0.2));
+	vector_add(test_data, node_constructor("C", 0.4));
+	vector_add(test_data, node_constructor("D", 0.3));
 
-	/* initialize the table */
 	cell** C = calloc(TABLE_COLUMNS, sizeof(cell*));
 	for (int i = 0; i < TABLE_COLUMNS; i++) {
 		C[i] = calloc(TABLE_COLUMNS, sizeof(cell));
 	}
 	fill_zeroes(C);
 
-	/* making the table */
-	for (int k = 2; k <= TABLE_ROWS; k++) { //Iterate over diagonals of the matrix
+	for (int k = 2; k <= TABLE_ROWS; k++) { // fill the table
+		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
+			int j = i + k - 1;
+			C[i][j].probability = minimum_cost(C, i, j) + weight(test_data, i, j);
+			// printf("C[%d][%d].root: %s\n", i, j, ((node*)vector_get(words, C[i][j].root_index))->key); //useful
+		}
+	}
+
+	print_probabilities(C);
+
+	printf("END\n");
+	return 1;
+}
+	// vector* words = read_file("data_7.txt");
+	// qsort(words->items, words->total, sizeof(node*), compare_keys); //?do we have to sort?
+
+	/* cell** C = calloc(TABLE_COLUMNS, sizeof(cell*)); //initialize the table
+	for (int i = 0; i < TABLE_COLUMNS; i++) {
+		C[i] = calloc(TABLE_COLUMNS, sizeof(cell));
+	}
+	fill_zeroes(C);
+
+	for (int k = 2; k <= TABLE_ROWS; k++) { // fill the table
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
 			C[i][j].probability = minimum_cost(C, i, j) + weight(words, i, j);
@@ -158,18 +182,11 @@ int main() {
 	}
 	printf("average number of comparisons: %lf\n", C[0][600].probability);
 
-	/* Making tree */
 	node* root = vector_get(words, C[0][600].root_index);
 	printf("node with key: [%s], has index %d\n", root->key, C[0][600].root_index);
 
-	return 0;
-
 	make_tree(C, words, 0, C[0][600].root_index - 1, &root->children[0]);
-	make_tree(C, words, C[0][600].root_index, words->total, &root->children[1]);
-
-	printf("END\n");
-	return 1;
-}
+	make_tree(C, words, C[0][600].root_index, words->total, &root->children[1]); */
 
 /* for (int i = 0; i < words->total; i++) {
 		node* my_node = vector_get(words, i);
