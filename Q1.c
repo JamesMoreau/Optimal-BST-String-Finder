@@ -89,7 +89,17 @@ void print_probabilities(cell** table) {
 	printf("______________TABLE______________\n");
 	for (int i = 0; i < TABLE_ROWS; i++) {
 		for (int j = 0; j < TABLE_COLUMNS; j++) {
-			printf ("%.2lf\t", table[i][j].probability);
+			printf ("%.1lf\t", table[i][j].probability);
+		}
+		printf("\n");
+	}
+}
+
+void print_roots(cell** table) {
+	printf("____________ROOT_TABLE____________\n");
+	for (int i = 0; i < TABLE_ROWS; i++) {
+		for (int j = 0; j < TABLE_COLUMNS; j++) {
+			printf ("%d\t", table[i][j].root_index);
 		}
 		printf("\n");
 	}
@@ -149,17 +159,19 @@ int main() {
 	for (int i = 0; i < TABLE_COLUMNS; i++) {
 		C[i] = calloc(TABLE_COLUMNS, sizeof(cell));
 	}
+	
 	fill_zeroes(C);
 
 	for (int k = 2; k <= TABLE_ROWS; k++) { // fill the table
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
 			C[i][j].probability = minimum_cost(C, i, j) + weight(test_data, i, j);
-			// printf("C[%d][%d].root: %s\n", i, j, ((node*)vector_get(words, C[i][j].root_index))->key); //useful
 		}
 	}
 
 	print_probabilities(C);
+	print_roots(C);
+
 
 	printf("END\n");
 	return 1;
