@@ -210,8 +210,5 @@ int main() {
 
 	return 1;
 }
-	/* printf("root");
-	printf("left child node: [%s], probability: [%lf]\n", root->children[0]->key, root->children[0]->probability);
-	printf("right child node: [%s], probability: [%lf]\n", root->children[1]->key, root->children[1]->probability); */
 
 
