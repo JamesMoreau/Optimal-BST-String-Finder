@@ -1,7 +1,5 @@
 #include "binary_search_tree.h"
 #include <stdbool.h>
-#include "vector.h"
-#include "Q1.h"
 
 node* node_constructor(char* key, double probability) {
 	node* new_node = malloc(sizeof(node));
@@ -96,17 +94,31 @@ node* find_node(node* root, char* key) {
     }
 }
 
+node* find_node_optimal(node* root, char* key) {
+    if (!root || !key) return (NULL);
 
-void make_tree(cell** C, vector* words, int left_bound, int right_bound, node** parent_child) {
-	if (left_bound < 0 || right_bound < 0 || right_bound > words->total) return;
+    node* current = root;
+    node* parent = root;
 
-	printf("recursion.\n");
+        while (true) {
+        parent = current;
 
-	int sub_root_index = C[left_bound][right_bound].root_index;
-    if (sub_root_index < 0) return;
-	node* sub_root = vector_get(words, sub_root_index);
-	(*parent_child) = sub_root;
+        printf("Compared with %s (%.2lf), ", parent->key, parent->probability);
+        if (strcmp(parent->key, key) < 0) {
+            printf("go right subtree.\n");
+            current = current->children[1];
+            
+            if (!current) return (NULL);
 
-	make_tree(C, words, left_bound, sub_root_index, &(sub_root->children[0])); //left tree
-	make_tree(C, words, sub_root_index + 1, right_bound, &(sub_root->children[1])); //right tree
+        } else if (strcmp(parent->key, key) > 0) {
+            printf("go left subtree.\n");
+            current = current->children[0];
+
+            if (!current) return (NULL);
+
+        } else { // key is equal!
+            printf("found.\n");
+            return (current);
+        }
+    }
 }

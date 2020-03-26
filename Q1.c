@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <limits.h>
 #include "vector.h"
-#include "binary_search_tree.h"
 #include "set.h"
 #include "Q1.h"
 
@@ -130,13 +129,22 @@ int compare_keys(const void* a, const void* b) {
 	return (strcmp((char*)(*first).key, (char*)(*second).key));
 }
 
+void make_tree(cell** C, vector* words, int left_bound, int right_bound, node** parent_child) {
+	if (left_bound < 0 || right_bound < 0 || right_bound > words->total) return;
+
+	int sub_root_index = C[left_bound][right_bound].root_index;
+    if (sub_root_index < 0) return;
+	node* sub_root = vector_get(words, sub_root_index);
+	(*parent_child) = sub_root;
+    sub_root->probability = C[left_bound][right_bound].probability;
+
+	make_tree(C, words, left_bound, sub_root_index, &(sub_root->children[0])); //left tree
+	make_tree(C, words, sub_root_index + 1, right_bound, &(sub_root->children[1])); //right tree
+}
+
 int main() {
-	vector* test_data = malloc(sizeof(vector));
-	vector_init(test_data);
-	vector_add(test_data, node_constructor("A", 0.1));
-	vector_add(test_data, node_constructor("B", 0.2));
-	vector_add(test_data, node_constructor("C", 0.4));
-	vector_add(test_data, node_constructor("D", 0.3));
+	vector* words = read_file("data_7.txt");
+	qsort(words->items, words->total, sizeof(node*), compare_keys);
 
 	cell** C = calloc(TABLE_COLUMNS, sizeof(cell*));
 	for (int i = 0; i < TABLE_COLUMNS; i++) {
@@ -148,53 +156,37 @@ int main() {
 	for (int k = 2; k <= TABLE_ROWS; k++) { // fill the table
 		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
 			int j = i + k - 1;
-			C[i][j].probability = minimum_cost(C, i, j) + weight(test_data, i, j);
+			C[i][j].probability = minimum_cost(C, i, j) + weight(words, i, j);
 		}
 	}
 
-	print_probabilities(C);
-	print_roots(C);
+	/* print_probabilities(C);
+	print_roots(C); */
 
 	int root_index = C[0][TABLE_COLUMNS - 1].root_index;
-	node* root = vector_get(test_data, root_index); //upper right cell
-	printf("root node: [%s], probability: [%lf]\n", root->key, root->probability);
+	node* root = vector_get(words, root_index); //upper right cell
+	root->probability = C[0][TABLE_COLUMNS - 1].probability;
 
+	make_tree(C, words, 0, root_index, &(root->children[0])); // make left children
+	make_tree(C, words, root_index + 1, words->total, &(root->children[1])); // make right children
 
-	make_tree(C, test_data, 0, root_index, &(root->children[0])); // make left children
-	make_tree(C, test_data, root_index + 1, test_data->total, &(root->children[1])); // make right children
+	char user_input[1000]; user_input[0] = '\0';
 
-	print_tree(root);
+	printf("Enter a key: ");
+	scanf("%s", user_input);
 
-	printf("END\n");
+	node* to_find = find_node_optimal(root, user_input);
+
+	if (!to_find) {
+		printf("Not found.\n");
+	}
+
 	return 1;
 }
 	/* printf("root");
 	printf("left child node: [%s], probability: [%lf]\n", root->children[0]->key, root->children[0]->probability);
 	printf("right child node: [%s], probability: [%lf]\n", root->children[1]->key, root->children[1]->probability); */
 
-	// vector* words = read_file("data_7.txt");
-	// qsort(words->items, words->total, sizeof(node*), compare_keys); //?do we have to sort?
-
-	/* cell** C = calloc(TABLE_COLUMNS, sizeof(cell*)); //initialize the table
-	for (int i = 0; i < TABLE_COLUMNS; i++) {
-		C[i] = calloc(TABLE_COLUMNS, sizeof(cell));
-	}
-	fill_zeroes(C);
-
-	for (int k = 2; k <= TABLE_ROWS; k++) { // fill the table
-		for (int i = 0; i < TABLE_COLUMNS - k + 1; i++) {
-			int j = i + k - 1;
-			C[i][j].probability = minimum_cost(C, i, j) + weight(words, i, j);
-			// printf("C[%d][%d].root: %s\n", i, j, ((node*)vector_get(words, C[i][j].root_index))->key); //useful
-		}
-	}
-	printf("average number of comparisons: %lf\n", C[0][600].probability);
-
-	node* root = vector_get(words, C[0][600].root_index);
-	printf("node with key: [%s], has index %d\n", root->key, C[0][600].root_index);
-
-	make_tree(C, words, 0, C[0][600].root_index - 1, &root->children[0]);
-	make_tree(C, words, C[0][600].root_index, words->total, &root->children[1]); */
 
 /* for (int i = 0; i < words->total; i++) {
 		node* my_node = vector_get(words, i);

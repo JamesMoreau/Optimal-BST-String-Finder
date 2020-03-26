@@ -1,10 +1,11 @@
 #include "vector.h"
+#include "binary_search_tree.h"
 
 #ifndef __Q1__
 #define __Q1__
 
-#define TABLE_ROWS 5
-#define TABLE_COLUMNS 5
+#define TABLE_ROWS 601
+#define TABLE_COLUMNS 601
 
 typedef struct {
 	double probability;
@@ -17,6 +18,7 @@ void make_tree(cell** C, vector* words, int left_bound, int right_bound, node** 
 /* algorithm */
 double minimum_cost(cell** C, int i, int j);
 double weight(vector* v, int i, int j);
+void make_tree(cell** C, vector* words, int left_bound, int right_bound, node** parent_child);
 
 /* debug */
 void print_probabilities(cell** table);

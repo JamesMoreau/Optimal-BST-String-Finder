@@ -18,6 +18,7 @@ void add_node(node* to_add, node** root);
 void delete_tree(node* root);
 void print_tree(node* root);
 node* find_node(node* root, char* key);
+node* find_node_optimal(node* root, char* key);
 
 
 #endif
